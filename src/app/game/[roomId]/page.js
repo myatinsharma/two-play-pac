@@ -10,11 +10,12 @@ export default function GameRoom({ params }) {
   const { roomId } = params; // Get roomId from URL params
   const [players, setPlayers] = useState([]);
   const [role, setRole] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!roomId) return;
 
-    // Initialize the socket connection
+    // Initialize the socket connection once
     socket = io();
 
     // Join the specific room
@@ -25,8 +26,15 @@ export default function GameRoom({ params }) {
       setPlayers(data.players);
     });
 
+    // Listen for "room full" error
+    socket.on("roomFull", (message) => {
+      setError(message); // Set the error message
+    });
+
     return () => {
       socket.off("roomData");
+      socket.off("roomFull");
+      socket.disconnect(); // Ensure socket is properly disconnected
     };
   }, [roomId]);
 
@@ -35,6 +43,10 @@ export default function GameRoom({ params }) {
     socket.emit("chooseRole", { roomId, role: selectedRole });
     setRole(selectedRole);
   };
+
+  if (error) {
+    return <div>{error}</div>; // Show error if room is full
+  }
 
   return (
     <div>
