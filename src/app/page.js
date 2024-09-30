@@ -1,69 +1,21 @@
-"use client";
+"use client"; // Mark as client component to use state and effects
 
-import { useEffect, useState } from "react";
-import { socket } from "../socket";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const router = useRouter();
 
-  useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-
-      socket.io.engine.on("upgrade", (transport) => {
-        setTransport(transport.name);
-      });
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("message", (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
-    });
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("message");
-    };
-  }, []);
-
-  const sendMessage = () => {
-    if (message.trim()) {
-      // Emit 'message' event to server
-      socket.emit("message", message);
-      setMessage(""); // Clear input after sending
-    }
+  const createRoom = () => {
+    // Generate a unique room ID
+    const roomId = Math.random().toString(36).substring(2, 10);
+    // Redirect to the room's unique URL
+    router.push(`/game/${roomId}`);
   };
 
   return (
     <div>
-      <ul>
-        {messages.map((msg, index) => (
-          <li key={index}>{msg}</li>
-        ))}
-      </ul>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
+      <h1>Welcome to the Chaser Game!</h1>
+      <button onClick={createRoom}>Create New Game Room</button>
     </div>
   );
 }
