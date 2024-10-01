@@ -30,7 +30,7 @@ export default function GameRoom({ params }) {
     if (!roomId) return;
 
     // Initialize the socket connection once
-    socket = io("https://24.98.250.112:5001", { transports: ['websocket'] });
+    socket = io("https://24.98.250.112:5000", { transports: ['websocket'] });
 
     // Join the specific room
     socket.emit("joinRoom", roomId);
