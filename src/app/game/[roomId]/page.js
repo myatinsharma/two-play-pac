@@ -30,7 +30,7 @@ export default function GameRoom({ params }) {
     if (!roomId) return;
 
     // Initialize the socket connection once
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    socket = io("http://24.98.250.112:5000");
 
     // Join the specific room
     socket.emit("joinRoom", roomId);
