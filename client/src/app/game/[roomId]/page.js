@@ -160,7 +160,6 @@ export default function GameRoom({ params }) {
           {renderMaze()}
         </div>
       )}
-      ß
       {!role && (
         <div>
           <button
