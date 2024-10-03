@@ -30,7 +30,7 @@ export default function GameRoom({ params }) {
     if (!roomId) return;
 
     // Initialize the socket connection once
-    socket = io("https://1tabtimer.com/");
+    socket = io("https://xyzatin.xyz");
 
     // Join the specific room
     socket.emit("joinRoom", roomId);
