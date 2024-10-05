@@ -14,7 +14,8 @@ export default function GameRoom({ params }) {
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
   const [gameStatus, setGameStatus] = useState("GameNotStarted");
   const [gameSettings, setGameSettings] = useState({});
-  const [defaultSettingLoaded, setDefaultSettingLoaded] = useState(false);
+  const [defaultSettingsDataLoaded, setDefaultSettingsDataLoaded] =
+    useState(false);
   const [settingsSelected, setSettingsSelected] = useState(false);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -96,15 +97,6 @@ export default function GameRoom({ params }) {
   }, [roomId]);
 
   useEffect(() => {
-    fetch("/settings.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setGameSettings(data);
-        setDefaultSettingLoaded(true);
-      });
-  }, []);
-
-  useEffect(() => {
     const handleKeyDown = (event) => {
       let newPos;
 
@@ -158,6 +150,18 @@ export default function GameRoom({ params }) {
     socket.emit("gameSettings", { roomId, settings });
   };
 
+  const handleSettingsChange = (event) => {
+    console.log("socket", socket, socket === true ? "true" : "false");
+
+    console.log("handleSettingsChange", event.target);
+    const { name, value } = event.target;
+    console.log("gameSettings", gameSettings);
+    const updatedSettings = { ...gameSettings, [name]: value };
+    console.log("updatedSettings", updatedSettings);
+    setGameSettings(updatedSettings);
+    socket.emit("settingsUpdate", { roomId, settings: updatedSettings });
+  };
+
   const startGame = () => {
     if (isRoomOwner) {
       socket.emit("startGame", { roomId });
@@ -169,13 +173,13 @@ export default function GameRoom({ params }) {
       <h2>Room: {roomId}</h2>
       <p>Players: {players.length}</p>
       <p>Status: {gameStatus}</p>
-      {defaultSettingLoaded && !settingsSelected && (
-        <GameSettings
-          isRoomOwner={isRoomOwner}
-          gameSettings={gameSettings}
-          handleSettingsSubmit={handleSettingsSubmit}
-        ></GameSettings>
-      )}
+      <GameSettings
+        isRoomOwner={isRoomOwner}
+        defaultSettingsDataLoaded={setDefaultSettingsDataLoaded}
+        handleSettingsSubmit={handleSettingsSubmit}
+        handleSettingsChange={handleSettingsChange}
+      ></GameSettings>
+
       {isRoomOwner && settingsSelected && gameStatus === "GameNotStarted" && (
         <button onClick={startGame}>Start Game</button>
       )}
