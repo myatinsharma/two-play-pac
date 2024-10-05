@@ -1,0 +1,23 @@
+{
+    "timeLimits": [
+      { "value": 30, "label": "30 seconds" },
+      { "value": 60, "label": "1 minute" },
+      { "value": 120, "label": "2 minutes" }
+    ],
+    "smoreCounts": [
+      { "value": 1, "label": "1" },
+      { "value": 2, "label": "2" },
+      { "value": 3, "label": "3" }
+    ],
+    "totalRounds": [
+      { "value": 1, "label": "1" },
+      { "value": 2, "label": "2" },
+      { "value": 3, "label": "3" },
+      { "value": 4, "label": "4" }
+    ],
+    "initialRoles": [
+      { "value": "1", "label": "Chaser" },
+      { "value": "2", "label": "Chasee" }
+    ]
+  }
+  
