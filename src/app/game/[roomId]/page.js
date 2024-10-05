@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useRouter } from "next/navigation";
+import GameSettings from "../gameSettings";
 
 let socket;
 
@@ -13,6 +14,7 @@ export default function GameRoom({ params }) {
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
   const [gameStatus, setGameStatus] = useState("GameNotStarted");
   const [gameSettings, setGameSettings] = useState({});
+  const [defaultSettingLoaded, setDefaultSettingLoaded] = useState(false);
   const [settingsSelected, setSettingsSelected] = useState(false);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -98,6 +100,7 @@ export default function GameRoom({ params }) {
       .then((response) => response.json())
       .then((data) => {
         setGameSettings(data);
+        setDefaultSettingLoaded(true);
       });
   }, []);
 
@@ -166,55 +169,12 @@ export default function GameRoom({ params }) {
       <h2>Room: {roomId}</h2>
       <p>Players: {players.length}</p>
       <p>Status: {gameStatus}</p>
-      {isRoomOwner && !settingsSelected && (
-        <form onSubmit={handleSettingsSubmit}>
-          <label>
-            Time Limit:
-            <select name="timeLimit">
-              {gameSettings.timeLimits.map((timeLimit) => (
-                <option key={timeLimit.value} value={timeLimit.value}>
-                  {timeLimit.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <br />
-          <label>
-            S'more Count:
-            <select name="smoreCount">
-              {gameSettings.smoreCounts.map((smoreCount) => (
-                <option key={smoreCount.value} value={smoreCount.value}>
-                  {smoreCount.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <br />
-          <label>
-            Total Rounds:
-            <select name="totalRounds">
-              {gameSettings.totalRounds.map((totalRound) => (
-                <option key={totalRound.value} value={totalRound.value}>
-                  {totalRound.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <br />
-          <label>
-            Initial Role:
-            <select name="initialRole">
-              {gameSettings.initialRoles.map((initialRole) => (
-                <option key={initialRole.value} value={initialRole.value}>
-                  {initialRole.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <br />
-          <button type="submit">Set Game Settings</button>
-        </form>
+      {defaultSettingLoaded && !settingsSelected && (
+        <GameSettings
+          isRoomOwner={isRoomOwner}
+          gameSettings={gameSettings}
+          handleSettingsSubmit={handleSettingsSubmit}
+        ></GameSettings>
       )}
       {isRoomOwner && settingsSelected && gameStatus === "GameNotStarted" && (
         <button onClick={startGame}>Start Game</button>
