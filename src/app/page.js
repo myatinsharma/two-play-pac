@@ -14,7 +14,7 @@ export default function HomePage() {
   }, []);
 
   const handleCreateRoom = () => {
-    const newRoomId = `room-${Math.random().toString(36).substr(2, 9)}`;
+    const newRoomId = `${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem("roomOwner", newRoomId);
     router.push(`/game/${newRoomId}`);
   };

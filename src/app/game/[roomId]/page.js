@@ -31,6 +31,7 @@ export default function GameRoom({ params }) {
   const [chaseePos, setChaseePos] = useState({ row: 6, col: 7 });
 
   useEffect(() => {
+    console.log("GameRoom useEffect roomId", roomId);
     const savedRoomId = localStorage.getItem("roomOwner");
     if (savedRoomId && !roomId) {
       router.push(`/game/${savedRoomId}`);
