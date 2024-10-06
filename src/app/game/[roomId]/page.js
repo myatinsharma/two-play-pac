@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
+import GameBoard from "../gameBoard";
 
 let socket;
 
@@ -13,25 +14,13 @@ export default function GameRoom({ params }) {
   const [role, setRole] = useState(null);
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
   const [gameStatus, setGameStatus] = useState("GameNotStarted");
-  const [settingsData, setGameSettings] = useState({});
-  const [defaultSettingsDataLoaded, setDefaultSettingsDataLoaded] =
-    useState(false);
-  const [settingsSelected, setSettingsSelected] = useState(false);
+  const [settingsData, setGameSettings] = useState({
+    timeLimit: "30",
+    smoreCount: "2",
+    totalRounds: "3",
+    initialRole: "1",
+  });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
-
-  const initialMaze = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  ];
-  const [maze, setMaze] = useState(initialMaze);
-  const [chaserPos, setChaserPos] = useState({ row: 1, col: 1 });
-  const [chaseePos, setChaseePos] = useState({ row: 6, col: 7 });
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -96,19 +85,46 @@ export default function GameRoom({ params }) {
     };
   }, [roomId]);
 
-  const handleSettingsSubmit = (event) => {
-    event.preventDefault();
-    const settings = {
-      timeLimit: event.target.timeLimit.value,
-      smoreCount: event.target.smoreCount.value,
-      totalRounds: event.target.totalRounds.value,
-      initialRole: event.target.initialRole.value || "Chasee",
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      let newPos;
+
+      if (role === "Chaser" && gameStatus === "GameStarted") {
+        newPos = movePlayer(chaserPos, event.key);
+        setChaserPos(newPos);
+        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
+      } else if (role === "Chasee" && gameStatus === "GameStarted") {
+        newPos = movePlayer(chaseePos, event.key);
+        setChaseePos(newPos);
+        socket.emit("playerMove", { roomId, role: "Chasee", newPos });
+      }
     };
-    setSettingsSelected(true);
-    setGameSettings(settings);
-    socket.emit("gameSettings", { roomId, settings });
-    console.log("socket", socket, roomId);
-  };
+
+    const movePlayer = (pos, key) => {
+      let newRow = pos.row;
+      let newCol = pos.col;
+
+      // Update the position based on arrow keys
+      if (key === "ArrowUp") newRow--;
+      else if (key === "ArrowDown") newRow++;
+      else if (key === "ArrowLeft") newCol--;
+      else if (key === "ArrowRight") newCol++;
+
+      // Ensure new position is within the maze and not a wall
+      if (maze[newRow] && maze[newRow][newCol] !== 1) {
+        return { row: newRow, col: newCol };
+      }
+
+      // Return previous position if movement is invalid
+      return pos;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [chaserPos, chaseePos]);
 
   const handleSettingsChange = (event) => {
     const { name, value } = event.target;
@@ -130,54 +146,14 @@ export default function GameRoom({ params }) {
       <GameSettings
         isRoomOwner={isRoomOwner}
         selectedSettingOptions={settingsData}
-        defaultSettingsDataLoaded={setDefaultSettingsDataLoaded}
-        handleSettingsSubmit={handleSettingsSubmit}
         handleSettingsChange={handleSettingsChange}
       ></GameSettings>
 
-      {isRoomOwner && settingsSelected && gameStatus === "GameNotStarted" && (
+      {isRoomOwner && gameStatus === "GameNotStarted" && (
         <button onClick={startGame}>Start Game</button>
       )}
       {gameStatus === "GameStarted" && (
-        <div>
-          <h3>Game Board</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${maze[0].length}, 20px)`,
-            }}
-          >
-            {maze.flatMap((row, rowIndex) =>
-              row.map((cell, colIndex) => {
-                let backgroundColor = "white";
-                if (rowIndex === chaserPos.row && colIndex === chaserPos.col) {
-                  backgroundColor = "blue"; // Chaser
-                } else if (
-                  rowIndex === chaseePos.row &&
-                  colIndex === chaseePos.col
-                ) {
-                  backgroundColor = "red"; // Chasee
-                } else if (cell === 1) {
-                  backgroundColor = "black"; // Wall
-                } else if (cell === 2) {
-                  backgroundColor = "yellow"; // S'more
-                }
-
-                return (
-                  <div
-                    key={`${rowIndex}-${colIndex}`}
-                    style={{
-                      width: 20,
-                      height: 20,
-                      backgroundColor,
-                      border: "1px solid gray",
-                    }}
-                  ></div>
-                );
-              })
-            )}
-          </div>
-        </div>
+        <GameBoard playerPos={playerPos} role={role} />
       )}
     </div>
   );

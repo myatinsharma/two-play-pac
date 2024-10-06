@@ -3,9 +3,7 @@ import { getNonOwnerRole } from "../utils";
 
 export default function GameSettings({
   selectedSettingOptions,
-  defaultSettingsDataLoaded,
   isRoomOwner,
-  handleSettingsSubmit,
   handleSettingsChange,
 }) {
   const [settingsData, setSettingsData] = useState({});
@@ -18,12 +16,11 @@ export default function GameSettings({
       .then((data) => {
         setSettingsData(data);
         setDefaultSettingOptionsLoaded(true);
-        defaultSettingsDataLoaded(true);
       });
   }, []);
   return (
     defaultSettingOptionsLoaded && (
-      <form onSubmit={handleSettingsSubmit}>
+      <form>
         <label>
           Time Limit:
           <select
@@ -99,9 +96,6 @@ export default function GameSettings({
             ))}
           </select>
         </label>
-
-        <br />
-        
       </form>
     )
   );
