@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getNonOwnerRole } from "../utils";
 
 export default function GameSettings({
   selectedSettingOptions,
@@ -29,16 +30,12 @@ export default function GameSettings({
             name="timeLimit"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
+            value={
+              selectedSettingOptions ? selectedSettingOptions.timeLimit : ""
+            }
           >
             {settingsData.timeLimits.map((timeLimit) => (
-              <option
-                key={timeLimit.value}
-                value={timeLimit.value}
-                selected={
-                  !selectedSettingOptions &&
-                  timeLimit.value === selectedSettingOptions.timeLimit
-                }
-              >
+              <option key={timeLimit.value} value={timeLimit.value}>
                 {timeLimit.label}
               </option>
             ))}
@@ -51,6 +48,9 @@ export default function GameSettings({
             name="smoreCount"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
+            value={
+              selectedSettingOptions ? selectedSettingOptions.smoreCount : ""
+            }
           >
             {settingsData.smoreCounts.map((smoreCount) => (
               <option key={smoreCount.value} value={smoreCount.value}>
@@ -66,6 +66,9 @@ export default function GameSettings({
             name="totalRounds"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
+            value={
+              selectedSettingOptions ? selectedSettingOptions.totalRounds : ""
+            }
           >
             {settingsData.totalRounds.map((totalRound) => (
               <option key={totalRound.value} value={totalRound.value}>
@@ -76,11 +79,18 @@ export default function GameSettings({
         </label>
         <br />
         <label>
-          Initial Role:
+          Your Initial Role:
           <select
             name="initialRole"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
+            value={
+              selectedSettingOptions
+                ? isRoomOwner
+                  ? selectedSettingOptions.initialRole
+                  : getNonOwnerRole(selectedSettingOptions.initialRole)
+                : ""
+            }
           >
             {settingsData.initialRoles.map((initialRole) => (
               <option key={initialRole.value} value={initialRole.value}>
@@ -91,7 +101,7 @@ export default function GameSettings({
         </label>
 
         <br />
-        {isRoomOwner && <button type="submit">Close Settings</button>}
+        
       </form>
     )
   );
