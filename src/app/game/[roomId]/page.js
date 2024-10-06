@@ -13,7 +13,7 @@ export default function GameRoom({ params }) {
   const [role, setRole] = useState(null);
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
   const [gameStatus, setGameStatus] = useState("GameNotStarted");
-  const [gameSettings, setGameSettings] = useState({});
+  const [settingsData, setGameSettings] = useState({});
   const [defaultSettingsDataLoaded, setDefaultSettingsDataLoaded] =
     useState(false);
   const [settingsSelected, setSettingsSelected] = useState(false);
@@ -34,7 +34,6 @@ export default function GameRoom({ params }) {
   const [chaseePos, setChaseePos] = useState({ row: 6, col: 7 });
 
   useEffect(() => {
-    console.log("GameRoom useEffect roomId", roomId);
     const savedRoomId = localStorage.getItem("roomOwner");
     if (savedRoomId && !roomId) {
       router.push(`/game/${savedRoomId}`);
@@ -92,50 +91,10 @@ export default function GameRoom({ params }) {
       socket.off("roomFull");
       socket.off("settingsUpdate");
       socket.off("playerMove");
+      socket.off("gameSettings");
       socket.disconnect();
     };
   }, [roomId]);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      let newPos;
-
-      if (role === "Chaser" && gameStatus === "GameStarted") {
-        newPos = movePlayer(chaserPos, event.key);
-        setChaserPos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
-      } else if (role === "Chasee" && gameStatus === "GameStarted") {
-        newPos = movePlayer(chaseePos, event.key);
-        setChaseePos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chasee", newPos });
-      }
-    };
-
-    const movePlayer = (pos, key) => {
-      let newRow = pos.row;
-      let newCol = pos.col;
-
-      // Update the position based on arrow keys
-      if (key === "ArrowUp") newRow--;
-      else if (key === "ArrowDown") newRow++;
-      else if (key === "ArrowLeft") newCol--;
-      else if (key === "ArrowRight") newCol++;
-
-      // Ensure new position is within the maze and not a wall
-      if (maze[newRow] && maze[newRow][newCol] !== 1) {
-        return { row: newRow, col: newCol };
-      }
-
-      // Return previous position if movement is invalid
-      return pos;
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [role, gameStatus, chaserPos, chaseePos, roomId]);
 
   const handleSettingsSubmit = (event) => {
     event.preventDefault();
@@ -148,18 +107,13 @@ export default function GameRoom({ params }) {
     setSettingsSelected(true);
     setGameSettings(settings);
     socket.emit("gameSettings", { roomId, settings });
+    console.log("socket", socket, roomId);
   };
 
   const handleSettingsChange = (event) => {
-    console.log("socket", socket, socket === true ? "true" : "false");
-
-    console.log("handleSettingsChange", event.target);
     const { name, value } = event.target;
-    console.log("gameSettings", gameSettings);
-    const updatedSettings = { ...gameSettings, [name]: value };
-    console.log("updatedSettings", updatedSettings);
-    setGameSettings(updatedSettings);
-    socket.emit("settingsUpdate", { roomId, settings: updatedSettings });
+    const updatedSettings = { ...settingsData, [name]: value };
+    socket.emit("gameSettings", { roomId, settings: updatedSettings });
   };
 
   const startGame = () => {
