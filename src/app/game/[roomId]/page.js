@@ -21,6 +21,7 @@ export default function GameRoom({ params }) {
     initialRole: "1",
   });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
+  const PLAYER_ROLES = Object.freeze({ CHASER: 1, CHASEE: 2 });
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -86,6 +87,10 @@ export default function GameRoom({ params }) {
   }, [roomId]);
 
   useEffect(() => {
+    setRole(settingsData.initialRole);
+  }, [settingsData]);
+
+  useEffect(() => {
     const handleKeyDown = (event) => {
       let newPos;
 
@@ -145,7 +150,7 @@ export default function GameRoom({ params }) {
       <p>Status: {gameStatus}</p>
       <GameSettings
         isRoomOwner={isRoomOwner}
-        selectedSettingOptions={settingsData}
+        settingsData={settingsData}
         handleSettingsChange={handleSettingsChange}
       ></GameSettings>
 

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { getNonOwnerRole } from "../utils";
 
 export default function GameSettings({
-  selectedSettingOptions,
   isRoomOwner,
+  settingsData,
   handleSettingsChange,
 }) {
-  const [settingsData, setSettingsData] = useState({});
+  const [settingOptionsData, setSettingOptionsData] = useState({});
   const [defaultSettingOptionsLoaded, setDefaultSettingOptionsLoaded] =
     useState(false);
 
@@ -14,7 +14,7 @@ export default function GameSettings({
     fetch("/settings.json")
       .then((response) => response.json())
       .then((data) => {
-        setSettingsData(data);
+        setSettingOptionsData(data);
         setDefaultSettingOptionsLoaded(true);
       });
   }, []);
@@ -27,11 +27,9 @@ export default function GameSettings({
             name="timeLimit"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
-            value={
-              selectedSettingOptions ? selectedSettingOptions.timeLimit : ""
-            }
+            value={settingsData ? settingsData.timeLimit : ""}
           >
-            {settingsData.timeLimits.map((timeLimit) => (
+            {settingOptionsData.timeLimits.map((timeLimit) => (
               <option key={timeLimit.value} value={timeLimit.value}>
                 {timeLimit.label}
               </option>
@@ -45,11 +43,9 @@ export default function GameSettings({
             name="smoreCount"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
-            value={
-              selectedSettingOptions ? selectedSettingOptions.smoreCount : ""
-            }
+            value={settingsData ? settingsData.smoreCount : ""}
           >
-            {settingsData.smoreCounts.map((smoreCount) => (
+            {settingOptionsData.smoreCounts.map((smoreCount) => (
               <option key={smoreCount.value} value={smoreCount.value}>
                 {smoreCount.label}
               </option>
@@ -63,11 +59,9 @@ export default function GameSettings({
             name="totalRounds"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
-            value={
-              selectedSettingOptions ? selectedSettingOptions.totalRounds : ""
-            }
+            value={settingsData ? settingsData.totalRounds : ""}
           >
-            {settingsData.totalRounds.map((totalRound) => (
+            {settingOptionsData.totalRounds.map((totalRound) => (
               <option key={totalRound.value} value={totalRound.value}>
                 {totalRound.label}
               </option>
@@ -82,14 +76,14 @@ export default function GameSettings({
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
             value={
-              selectedSettingOptions
+              settingsData
                 ? isRoomOwner
-                  ? selectedSettingOptions.initialRole
-                  : getNonOwnerRole(selectedSettingOptions.initialRole)
+                  ? settingsData.initialRole
+                  : getNonOwnerRole(settingsData.initialRole)
                 : ""
             }
           >
-            {settingsData.initialRoles.map((initialRole) => (
+            {settingOptionsData.initialRoles.map((initialRole) => (
               <option key={initialRole.value} value={initialRole.value}>
                 {initialRole.label}
               </option>
