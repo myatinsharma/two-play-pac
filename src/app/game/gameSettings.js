@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 
-export default function GameSettings(props) {
+export default function GameSettings({
+  selectedSettingOptions,
+  defaultSettingsDataLoaded,
+  isRoomOwner,
+  handleSettingsSubmit,
+  handleSettingsChange,
+}) {
   const [settingsData, setSettingsData] = useState({});
-  const [defaultSettingsDataLoaded, setDefaultSettingsDataLoaded] =
+  const [defaultSettingOptionsLoaded, setDefaultSettingOptionsLoaded] =
     useState(false);
 
   useEffect(() => {
@@ -10,22 +16,29 @@ export default function GameSettings(props) {
       .then((response) => response.json())
       .then((data) => {
         setSettingsData(data);
-        setDefaultSettingsDataLoaded(true);
-        props.defaultSettingsDataLoaded(true);
+        setDefaultSettingOptionsLoaded(true);
+        defaultSettingsDataLoaded(true);
       });
   }, []);
   return (
-    defaultSettingsDataLoaded && (
-      <form onSubmit={props.handleSettingsSubmit}>
+    defaultSettingOptionsLoaded && (
+      <form onSubmit={handleSettingsSubmit}>
         <label>
           Time Limit:
           <select
             name="timeLimit"
-            onChange={props.handleSettingsChange}
-            disabled={!props.isRoomOwner}
+            onChange={handleSettingsChange}
+            disabled={!isRoomOwner}
           >
             {settingsData.timeLimits.map((timeLimit) => (
-              <option key={timeLimit.value} value={timeLimit.value}>
+              <option
+                key={timeLimit.value}
+                value={timeLimit.value}
+                selected={
+                  !selectedSettingOptions &&
+                  timeLimit.value === selectedSettingOptions.timeLimit
+                }
+              >
                 {timeLimit.label}
               </option>
             ))}
@@ -36,8 +49,8 @@ export default function GameSettings(props) {
           S'more Count:
           <select
             name="smoreCount"
-            onChange={props.handleSettingsChange}
-            disabled={!props.isRoomOwner}
+            onChange={handleSettingsChange}
+            disabled={!isRoomOwner}
           >
             {settingsData.smoreCounts.map((smoreCount) => (
               <option key={smoreCount.value} value={smoreCount.value}>
@@ -51,8 +64,8 @@ export default function GameSettings(props) {
           Total Rounds:
           <select
             name="totalRounds"
-            onChange={props.handleSettingsChange}
-            disabled={!props.isRoomOwner}
+            onChange={handleSettingsChange}
+            disabled={!isRoomOwner}
           >
             {settingsData.totalRounds.map((totalRound) => (
               <option key={totalRound.value} value={totalRound.value}>
@@ -66,8 +79,8 @@ export default function GameSettings(props) {
           Initial Role:
           <select
             name="initialRole"
-            onChange={props.handleSettingsChange}
-            disabled={!props.isRoomOwner}
+            onChange={handleSettingsChange}
+            disabled={!isRoomOwner}
           >
             {settingsData.initialRoles.map((initialRole) => (
               <option key={initialRole.value} value={initialRole.value}>
@@ -78,7 +91,7 @@ export default function GameSettings(props) {
         </label>
 
         <br />
-        {props.isRoomOwner && <button type="submit">Close Settings</button>}
+        {isRoomOwner && <button type="submit">Close Settings</button>}
       </form>
     )
   );

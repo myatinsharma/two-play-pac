@@ -129,6 +129,7 @@ export default function GameRoom({ params }) {
       <p>Status: {gameStatus}</p>
       <GameSettings
         isRoomOwner={isRoomOwner}
+        selectedSettingOptions={settingsData}
         defaultSettingsDataLoaded={setDefaultSettingsDataLoaded}
         handleSettingsSubmit={handleSettingsSubmit}
         handleSettingsChange={handleSettingsChange}
