@@ -4,23 +4,25 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
+import { GAME_STATUS } from "../../constants";
 
 let socket;
 
 export default function GameRoom({ params }) {
   const PLAYER_ROLES = Object.freeze({ CHASER: 1, CHASEE: 2 });
+
   const { roomId } = params;
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [players, setPlayers] = useState([]);
   const [role, setRole] = useState(null);
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
-  const [gameStatus, setGameStatus] = useState("GameNotStarted");
+  const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState({
     timeLimit: "30",
     smoreCount: "2",
     totalRounds: "3",
-    role: 1,
+    role: PLAYER_ROLES.CHASER,
   });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -34,11 +36,10 @@ export default function GameRoom({ params }) {
     if (!roomId) return;
 
     socket = io("http://localhost:80");
-    socket.emit("joinRoom", roomId);
+    socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
       setPlayers(data.players);
-      console.log(data.players);
       if (data.players[0].id === socket.id) {
         setIsRoomOwner(true);
         localStorage.setItem("roomOwner", roomId);
@@ -47,18 +48,10 @@ export default function GameRoom({ params }) {
       }
     });
 
-    socket.on("roleChosen", ({ role, player }) => {
-      setRoles((prevRoles) => ({ ...prevRoles, [role]: player }));
-      console.log("roles", roles);
-      if (player !== socket.id) {
-        setRole(role === "Chaser" ? "Chasee" : "Chaser");
+    socket.on("startGame", ({ status }) => {
+      if (status === GAME_STATUS.STARTED) {
+        setGameStatus(GAME_STATUS.STARTED);
       }
-    });
-
-    socket.on("startGame", ({ settings }) => {
-      console.log("game started", settings);
-      setGameStatus("GameStarted");
-      setGameSettings(settings);
     });
 
     socket.on("roomFull", () => {
@@ -88,18 +81,20 @@ export default function GameRoom({ params }) {
       socket.off("playerMove");
       socket.off("gameSettings");
       socket.disconnect();
-      console.log("disconnected from room");
     };
   }, [roomId]);
 
   useEffect(() => {
-    setRole(settingsData.role);
+    if (settingsData) setRole(settingsData.role);
   }, [settingsData]);
 
   const handleSettingsChange = (event) => {
     setShowLoader(true);
     const { name, value } = event.target;
-    const updatedSettings = { ...settingsData, [name]: value };
+    const updatedSettings = {
+      ...settingsData,
+      [name]: name === "role" ? parseInt(value) : value,
+    };
     socket.emit("gameSettings", { roomId, settings: updatedSettings });
   };
 
@@ -117,14 +112,17 @@ export default function GameRoom({ params }) {
       <GameSettings
         isRoomOwner={isRoomOwner}
         settingsData={settingsData}
+        gameStatus={gameStatus}
         handleSettingsChange={handleSettingsChange}
       ></GameSettings>
 
-      {isRoomOwner && gameStatus === "GameNotStarted" && settingsData && (
-        <button onClick={startGame}>Start Game</button>
-      )}
-      {gameStatus === "GameStarted" && settingsData && (
-        <GameBoard players={players} role={settingsData.role} />
+      {isRoomOwner &&
+        gameStatus === GAME_STATUS.NOT_STARTED &&
+        settingsData && <button onClick={startGame}>Start Game</button>}
+      {gameStatus === GAME_STATUS.STARTED && settingsData && (
+        <>
+          <GameBoard players={players} role={settingsData.role} />
+        </>
       )}
       {showLoader && (
         <div className="loader-container">

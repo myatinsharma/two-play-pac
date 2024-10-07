@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import { getNonOwnerRole } from "../utils";
+import { GAME_STATUS } from "../constants";
 
 export default function GameSettings({
   isRoomOwner,
   settingsData,
+  gameStatus,
   handleSettingsChange,
 }) {
   const [settingOptionsData, setSettingOptionsData] = useState({});
-  const [defaultSettingOptionsLoaded, setDefaultSettingOptionsLoaded] =
-    useState(false);
-  console.log("settingsData", settingsData);
+  const [settingOptionsLoaded, setSettingOptionsLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/settings.json")
       .then((response) => response.json())
       .then((data) => {
         setSettingOptionsData(data);
-        setDefaultSettingOptionsLoaded(true);
+        setSettingOptionsLoaded(true);
       });
   }, []);
   return (
-    defaultSettingOptionsLoaded && (
+    settingOptionsLoaded && (
       <form>
         <label>
           Time Limit:
           <select
             name="timeLimit"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner}
+            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
             value={settingsData ? settingsData.timeLimit : ""}
           >
             {settingOptionsData.timeLimits.map((timeLimit) => (
@@ -43,7 +43,7 @@ export default function GameSettings({
           <select
             name="smoreCount"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner}
+            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
             value={settingsData ? settingsData.smoreCount : ""}
           >
             {settingOptionsData.smoreCounts.map((smoreCount) => (
@@ -59,7 +59,7 @@ export default function GameSettings({
           <select
             name="totalRounds"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner}
+            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
             value={settingsData ? settingsData.totalRounds : ""}
           >
             {settingOptionsData.totalRounds.map((totalRound) => (
@@ -75,7 +75,7 @@ export default function GameSettings({
           <select
             name="role"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner}
+            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
             value={
               settingsData
                 ? isRoomOwner

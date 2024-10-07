@@ -72,14 +72,15 @@ function GameBoard({ players, role }) {
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
 
-            if (rowIndex === chaserPos.row && colIndex === chaserPos.col) {
-              backgroundColor = "blue"; // Chaser
-            } else if (
-              rowIndex === chaseePos.row &&
-              colIndex === chaseePos.col
-            ) {
-              backgroundColor = "red"; // Chasee
-            } else if (cell === 1) {
+            // if (rowIndex === chaserPos.row && colIndex === chaserPos.col) {
+            //   backgroundColor = "blue"; // Chaser
+            // } else if (
+            //   rowIndex === chaseePos.row &&
+            //   colIndex === chaseePos.col
+            // ) {
+            //   backgroundColor = "red"; // Chasee
+            // } else
+            if (cell === 1) {
               backgroundColor = "black"; // Wall
             } else if (cell === 2) {
               backgroundColor = "yellow"; // S'more
