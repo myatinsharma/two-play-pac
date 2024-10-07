@@ -8,8 +8,10 @@ import GameBoard from "../gameBoard";
 let socket;
 
 export default function GameRoom({ params }) {
+  const PLAYER_ROLES = Object.freeze({ CHASER: 1, CHASEE: 2 });
   const { roomId } = params;
   const router = useRouter();
+  const [showLoader, setShowLoader] = useState(false);
   const [players, setPlayers] = useState([]);
   const [role, setRole] = useState(null);
   const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
@@ -18,10 +20,9 @@ export default function GameRoom({ params }) {
     timeLimit: "30",
     smoreCount: "2",
     totalRounds: "3",
-    initialRole: "1",
+    role: 1,
   });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
-  const PLAYER_ROLES = Object.freeze({ CHASER: 1, CHASEE: 2 });
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -55,6 +56,7 @@ export default function GameRoom({ params }) {
     });
 
     socket.on("startGame", ({ settings }) => {
+      console.log("game started", settings);
       setGameStatus("GameStarted");
       setGameSettings(settings);
     });
@@ -66,6 +68,7 @@ export default function GameRoom({ params }) {
 
     socket.on("settingsUpdate", (settings) => {
       setGameSettings(settings);
+      setShowLoader(false);
     });
 
     socket.on("playerMove", ({ role, newPos }) => {
@@ -90,51 +93,11 @@ export default function GameRoom({ params }) {
   }, [roomId]);
 
   useEffect(() => {
-    setRole(settingsData.initialRole);
+    setRole(settingsData.role);
   }, [settingsData]);
 
-  // useEffect(() => {
-  //   const handleKeyDown = (event) => {
-  //     let newPos;
-
-  //     if (role === "Chaser" && gameStatus === "GameStarted") {
-  //       newPos = movePlayer(chaserPos, event.key);
-  //       setChaserPos(newPos);
-  //       socket.emit("playerMove", { roomId, role: "Chaser", newPos });
-  //     } else if (role === "Chasee" && gameStatus === "GameStarted") {
-  //       newPos = movePlayer(chaseePos, event.key);
-  //       setChaseePos(newPos);
-  //       socket.emit("playerMove", { roomId, role: "Chasee", newPos });
-  //     }
-  //   };
-
-  //   const movePlayer = (pos, key) => {
-  //     let newRow = pos.row;
-  //     let newCol = pos.col;
-
-  //     // Update the position based on arrow keys
-  //     if (key === "ArrowUp") newRow--;
-  //     else if (key === "ArrowDown") newRow++;
-  //     else if (key === "ArrowLeft") newCol--;
-  //     else if (key === "ArrowRight") newCol++;
-
-  //     // Ensure new position is within the maze and not a wall
-  //     if (maze[newRow] && maze[newRow][newCol] !== 1) {
-  //       return { row: newRow, col: newCol };
-  //     }
-
-  //     // Return previous position if movement is invalid
-  //     return pos;
-  //   };
-
-  //   window.addEventListener("keydown", handleKeyDown);
-
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //   };
-  // }, [chaserPos, chaseePos]);
-
   const handleSettingsChange = (event) => {
+    setShowLoader(true);
     const { name, value } = event.target;
     const updatedSettings = { ...settingsData, [name]: value };
     socket.emit("gameSettings", { roomId, settings: updatedSettings });
@@ -157,11 +120,16 @@ export default function GameRoom({ params }) {
         handleSettingsChange={handleSettingsChange}
       ></GameSettings>
 
-      {isRoomOwner && gameStatus === "GameNotStarted" && (
+      {isRoomOwner && gameStatus === "GameNotStarted" && settingsData && (
         <button onClick={startGame}>Start Game</button>
       )}
-      {gameStatus === "GameStarted" && (
-        <GameBoard playerPos={playerPos} role={role} />
+      {gameStatus === "GameStarted" && settingsData && (
+        <GameBoard players={players} role={settingsData.role} />
+      )}
+      {showLoader && (
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
       )}
     </div>
   );

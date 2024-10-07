@@ -15,7 +15,7 @@
       { "value": 3, "label": "3" },
       { "value": 4, "label": "4" }
     ],
-    "initialRoles": [
+    "roles": [
       { "value": 1, "label": "Chaser" },
       { "value": 2, "label": "Chasee" }
     ]

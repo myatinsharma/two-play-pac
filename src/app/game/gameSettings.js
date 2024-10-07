@@ -9,6 +9,7 @@ export default function GameSettings({
   const [settingOptionsData, setSettingOptionsData] = useState({});
   const [defaultSettingOptionsLoaded, setDefaultSettingOptionsLoaded] =
     useState(false);
+  console.log("settingsData", settingsData);
 
   useEffect(() => {
     fetch("/settings.json")
@@ -70,22 +71,22 @@ export default function GameSettings({
         </label>
         <br />
         <label>
-          Your Initial Role:
+          Your Role:
           <select
-            name="initialRole"
+            name="role"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner}
             value={
               settingsData
                 ? isRoomOwner
-                  ? settingsData.initialRole
-                  : getNonOwnerRole(settingsData.initialRole)
+                  ? settingsData.role
+                  : getNonOwnerRole(settingsData.role)
                 : ""
             }
           >
-            {settingOptionsData.initialRoles.map((initialRole) => (
-              <option key={initialRole.value} value={initialRole.value}>
-                {initialRole.label}
+            {settingOptionsData.roles.map((role) => (
+              <option key={role.value} value={role.value}>
+                {role.label}
               </option>
             ))}
           </select>
