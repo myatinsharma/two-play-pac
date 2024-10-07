@@ -37,7 +37,8 @@ export default function GameRoom({ params }) {
 
     socket.on("roomData", (data) => {
       setPlayers(data.players);
-      if (data.players[0] === socket.id) {
+      console.log(data.players);
+      if (data.players[0].id === socket.id) {
         setIsRoomOwner(true);
         localStorage.setItem("roomOwner", roomId);
       } else {
@@ -47,6 +48,7 @@ export default function GameRoom({ params }) {
 
     socket.on("roleChosen", ({ role, player }) => {
       setRoles((prevRoles) => ({ ...prevRoles, [role]: player }));
+      console.log("roles", roles);
       if (player !== socket.id) {
         setRole(role === "Chaser" ? "Chasee" : "Chaser");
       }
@@ -83,6 +85,7 @@ export default function GameRoom({ params }) {
       socket.off("playerMove");
       socket.off("gameSettings");
       socket.disconnect();
+      console.log("disconnected from room");
     };
   }, [roomId]);
 
@@ -90,46 +93,46 @@ export default function GameRoom({ params }) {
     setRole(settingsData.initialRole);
   }, [settingsData]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      let newPos;
+  // useEffect(() => {
+  //   const handleKeyDown = (event) => {
+  //     let newPos;
 
-      if (role === "Chaser" && gameStatus === "GameStarted") {
-        newPos = movePlayer(chaserPos, event.key);
-        setChaserPos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
-      } else if (role === "Chasee" && gameStatus === "GameStarted") {
-        newPos = movePlayer(chaseePos, event.key);
-        setChaseePos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chasee", newPos });
-      }
-    };
+  //     if (role === "Chaser" && gameStatus === "GameStarted") {
+  //       newPos = movePlayer(chaserPos, event.key);
+  //       setChaserPos(newPos);
+  //       socket.emit("playerMove", { roomId, role: "Chaser", newPos });
+  //     } else if (role === "Chasee" && gameStatus === "GameStarted") {
+  //       newPos = movePlayer(chaseePos, event.key);
+  //       setChaseePos(newPos);
+  //       socket.emit("playerMove", { roomId, role: "Chasee", newPos });
+  //     }
+  //   };
 
-    const movePlayer = (pos, key) => {
-      let newRow = pos.row;
-      let newCol = pos.col;
+  //   const movePlayer = (pos, key) => {
+  //     let newRow = pos.row;
+  //     let newCol = pos.col;
 
-      // Update the position based on arrow keys
-      if (key === "ArrowUp") newRow--;
-      else if (key === "ArrowDown") newRow++;
-      else if (key === "ArrowLeft") newCol--;
-      else if (key === "ArrowRight") newCol++;
+  //     // Update the position based on arrow keys
+  //     if (key === "ArrowUp") newRow--;
+  //     else if (key === "ArrowDown") newRow++;
+  //     else if (key === "ArrowLeft") newCol--;
+  //     else if (key === "ArrowRight") newCol++;
 
-      // Ensure new position is within the maze and not a wall
-      if (maze[newRow] && maze[newRow][newCol] !== 1) {
-        return { row: newRow, col: newCol };
-      }
+  //     // Ensure new position is within the maze and not a wall
+  //     if (maze[newRow] && maze[newRow][newCol] !== 1) {
+  //       return { row: newRow, col: newCol };
+  //     }
 
-      // Return previous position if movement is invalid
-      return pos;
-    };
+  //     // Return previous position if movement is invalid
+  //     return pos;
+  //   };
 
-    window.addEventListener("keydown", handleKeyDown);
+  //   window.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [chaserPos, chaseePos]);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, [chaserPos, chaseePos]);
 
   const handleSettingsChange = (event) => {
     const { name, value } = event.target;

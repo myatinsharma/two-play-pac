@@ -12,7 +12,7 @@ function GameBoard({ playerPos, role }) {
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const [maze, setMaze] = useState(initialMaze);
-  const [playerPos, setPlayerPos] = useState({ row: 1, col: 1 });
+  //const [playerPos, setPlayerPos] = useState({ row: 1, col: 1 });
   const initialPositions = {
     chaserPos: { row: 1, col: 1 },
     chaseePos: { row: 1, col: 7 },
