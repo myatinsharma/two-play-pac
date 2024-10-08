@@ -4,25 +4,27 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import { GAME_STATUS } from "../../constants";
+import {
+  GAME_STATUS,
+  GAME_STATUS_DESCRIPTION,
+  PLAYER_ROLES,
+} from "../../constants";
 
 let socket;
 
 export default function GameRoom({ params }) {
-  const PLAYER_ROLES = Object.freeze({ CHASER: 1, CHASEE: 2 });
-
   const { roomId } = params;
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
+  const [serverConnected, setServerConnected] = useState(false);
   const [players, setPlayers] = useState([]);
+  const [player, setPlayer] = useState(null);
   const [role, setRole] = useState(null);
-  const [roles, setRoles] = useState({ Chaser: null, Chasee: null });
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState({
     timeLimit: "30",
     smoreCount: "2",
     totalRounds: "3",
-    role: PLAYER_ROLES.CHASER,
   });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -39,11 +41,21 @@ export default function GameRoom({ params }) {
     socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
+      console.log("roomData", data);
       setPlayers(data.players);
-      if (data.players[0].id === socket.id) {
+      const player = data.players.find((player) => player.id === socket.id);
+      setPlayer(player);
+      setServerConnected(true);
+
+      if (
+        data.players.find(
+          (player) => player.id === socket.id && player.roomOwner
+        )
+      ) {
         setIsRoomOwner(true);
         localStorage.setItem("roomOwner", roomId);
       } else {
+        setIsRoomOwner(false);
         localStorage.removeItem("roomOwner");
       }
     });
@@ -88,14 +100,75 @@ export default function GameRoom({ params }) {
     if (settingsData) setRole(settingsData.role);
   }, [settingsData]);
 
+  //position of chaser and chasee
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      let newPos;
+
+      if (role === PLAYER_ROLES.CHASER) {
+        newPos = movePlayer(chaserPos, event.key);
+        setChaserPos(newPos);
+        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
+      } else if (role === PLAYER_ROLES.CHASEE) {
+        newPos = movePlayer(chaseePos, event.key);
+        setChaseePos(newPos);
+        socket.emit("playerMove", { roomId, role: "Chasee", newPos });
+      }
+    };
+
+    const movePlayer = (pos, key) => {
+      let newRow = pos.row;
+      let newCol = pos.col;
+
+      // Update the position based on arrow keys
+      if (key === "ArrowUp") newRow--;
+      else if (key === "ArrowDown") newRow++;
+      else if (key === "ArrowLeft") newCol--;
+      else if (key === "ArrowRight") newCol++;
+
+      // Ensure new position is within the maze and not a wall
+      if (maze[newRow] && maze[newRow][newCol] !== 1) {
+        return { row: newRow, col: newCol };
+      }
+
+      // Return previous position if movement is invalid
+      return pos;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [chaserPos, chaseePos]);
+
+  const handlePlayerMove = (event) => {
+    let newPos;
+
+    if (role === PLAYER_ROLES.CHASER) {
+      newPos = movePlayer(chaserPos, event.key);
+      setChaserPos(newPos);
+      socket.emit("playerMove", { roomId, role: "Chaser", newPos });
+    } else if (role === PLAYER_ROLES.CHASEE) {
+      newPos = movePlayer(chaseePos, event.key);
+      setChaseePos(newPos);
+      socket.emit("playerMove", { roomId, role: "Chasee", newPos });
+    }
+  };
+
   const handleSettingsChange = (event) => {
+    if (gameStatus === GAME_STATUS.STARTED) return;
     setShowLoader(true);
     const { name, value } = event.target;
-    const updatedSettings = {
-      ...settingsData,
-      [name]: name === "role" ? parseInt(value) : value,
-    };
-    socket.emit("gameSettings", { roomId, settings: updatedSettings });
+    if (name === "role") {
+      socket.emit("roleChosen", { roomId, role: parseInt(value) });
+    } else {
+      const updatedSettings = {
+        ...settingsData,
+        [name]: value,
+      };
+      socket.emit("gameSettings", { roomId, settings: updatedSettings });
+    }
   };
 
   const startGame = () => {
@@ -107,23 +180,32 @@ export default function GameRoom({ params }) {
   return (
     <div>
       <h2>Room: {roomId}</h2>
+      <p>Server Connected: {serverConnected ? "Yes" : "No"}</p>
       <p>Players: {players.length}</p>
-      <p>Status: {gameStatus}</p>
-      <GameSettings
-        isRoomOwner={isRoomOwner}
-        settingsData={settingsData}
-        gameStatus={gameStatus}
-        handleSettingsChange={handleSettingsChange}
-      ></GameSettings>
-
+      <p>Status: {GAME_STATUS_DESCRIPTION[gameStatus]}</p>
+      {serverConnected && (
+        <GameSettings
+          isRoomOwner={isRoomOwner}
+          settingsData={settingsData}
+          gameStatus={gameStatus}
+          role={player.role}
+          handleSettingsChange={handleSettingsChange}
+        ></GameSettings>
+      )}
       {isRoomOwner &&
         gameStatus === GAME_STATUS.NOT_STARTED &&
         settingsData && <button onClick={startGame}>Start Game</button>}
-      {gameStatus === GAME_STATUS.STARTED && settingsData && (
-        <>
-          <GameBoard players={players} role={settingsData.role} />
-        </>
-      )}
+      {gameStatus === GAME_STATUS.STARTED &&
+        settingsData &&
+        players.length === 2 && (
+          <>
+            <GameBoard
+              players={players}
+              role={player.role}
+              handlePlayerMove={handlePlayerMove}
+            />
+          </>
+        )}
       {showLoader && (
         <div className="loader-container">
           <div className="loader"></div>

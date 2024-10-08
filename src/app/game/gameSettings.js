@@ -5,6 +5,7 @@ import { GAME_STATUS } from "../constants";
 export default function GameSettings({
   isRoomOwner,
   settingsData,
+  role,
   gameStatus,
   handleSettingsChange,
 }) {
@@ -76,13 +77,7 @@ export default function GameSettings({
             name="role"
             onChange={handleSettingsChange}
             disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
-            value={
-              settingsData
-                ? isRoomOwner
-                  ? settingsData.role
-                  : getNonOwnerRole(settingsData.role)
-                : ""
-            }
+            value={role}
           >
             {settingOptionsData.roles.map((role) => (
               <option key={role.value} value={role.value}>
