@@ -29,28 +29,33 @@ function GameBoard({ players, handlePlayerMove }) {
   };
 
   useEffect(() => {
+    const movePlayer = ({ key }) => {
+      setPlayerPos((currentPos) => {
+        let newRow = currentPos.row;
+        let newCol = currentPos.col;
+
+        // Update the position based on arrow keys
+        if (key === "ArrowUp") newRow--;
+        else if (key === "ArrowDown") newRow++;
+        else if (key === "ArrowLeft") newCol--;
+        else if (key === "ArrowRight") newCol++;
+
+        // Ensure new position is within the maze and not a wall
+        if (maze[newRow][newCol] !== 1) {
+          return { row: newRow, col: newCol };
+        }
+
+        // Return previous position if movement is invalid
+        return currentPos;
+      });
+    };
+
     window.addEventListener("keydown", movePlayer);
 
     return () => {
       window.removeEventListener("keydown", movePlayer);
     };
-  }, []);
-
-  const movePlayer = ({ key }) => {
-    let newRow = playerPos.row;
-    let newCol = playerPos.col;
-
-    // Update the position based on arrow keys
-    if (key === "ArrowUp") newRow--;
-    else if (key === "ArrowDown") newRow++;
-    else if (key === "ArrowLeft") newCol--;
-    else if (key === "ArrowRight") newCol++;
-
-    // Ensure new position is within the maze and not a wall
-    if (maze[newRow][newCol] !== 1) {
-      setPlayerPos({ row: newRow, col: newCol });
-    }
-  };
+  }, [maze]); // Add maze as a dependency
 
   return (
     <div>
