@@ -5,7 +5,7 @@ import {
   PLAYER_ROLES,
 } from "../constants";
 
-function GameBoard({ players, handlePlayerMove }) {
+function GameBoard({ players, role, handlePlayerMove }) {
   const initialMaze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
@@ -17,11 +17,9 @@ function GameBoard({ players, handlePlayerMove }) {
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const [maze, setMaze] = useState(initialMaze);
-  const [chaserPos, setChaserPos] = useState({ row: 1, col: 1 }); // Initial position for "Chaser"
-  const [chaseePos, setChaseePos] = useState({ row: 6, col: 7 }); // Initial position for "Chasee"
   const [playerPos, setPlayerPos] = useState(
     PLAYER_ROLES.CHASER ? { row: 1, col: 1 } : { row: 6, col: 7 }
-  ); // Initial position for "Chaser"
+  );
 
   const initialPositions = {
     chaserPos: { row: 1, col: 1 },
@@ -42,6 +40,7 @@ function GameBoard({ players, handlePlayerMove }) {
 
         // Ensure new position is within the maze and not a wall
         if (maze[newRow][newCol] !== 1) {
+          handlePlayerMove({ row: newRow, col: newCol });
           return { row: newRow, col: newCol };
         }
 
@@ -70,11 +69,26 @@ function GameBoard({ players, handlePlayerMove }) {
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
 
-            if (rowIndex === playerPos.row && colIndex === playerPos.col) {
+            if (
+              rowIndex ===
+                (PLAYER_ROLES.CHASER
+                  ? playerPos.row
+                  : initialPositions.chaserPos.row) &&
+              colIndex ===
+                (PLAYER_ROLES.CHASER
+                  ? playerPos.col
+                  : initialPositions.chaserPos.col)
+            ) {
               backgroundColor = "blue"; // Chaser
             } else if (
-              rowIndex === initialPositions.chaseePos.row &&
-              colIndex === initialPositions.chaseePos.col
+              rowIndex ===
+                (PLAYER_ROLES.CHASEE
+                  ? playerPos.row
+                  : initialPositions.chaseePos.row) &&
+              colIndex ===
+                (PLAYER_ROLES.CHASEE
+                  ? playerPos.col
+                  : initialPositions.chaseePos.col)
             ) {
               backgroundColor = "red"; // Chasee
             } else if (cell === 1) {
