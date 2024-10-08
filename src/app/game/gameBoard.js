@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   GAME_STATUS,
   GAME_STATUS_DESCRIPTION,
@@ -18,6 +17,11 @@ function GameBoard({ players, handlePlayerMove }) {
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const [maze, setMaze] = useState(initialMaze);
+  const [chaserPos, setChaserPos] = useState({ row: 1, col: 1 }); // Initial position for "Chaser"
+  const [chaseePos, setChaseePos] = useState({ row: 6, col: 7 }); // Initial position for "Chasee"
+  const [playerPos, setPlayerPos] = useState(
+    PLAYER_ROLES.CHASER ? { row: 1, col: 1 } : { row: 6, col: 7 }
+  ); // Initial position for "Chaser"
 
   const initialPositions = {
     chaserPos: { row: 1, col: 1 },
@@ -25,31 +29,33 @@ function GameBoard({ players, handlePlayerMove }) {
   };
 
   useEffect(() => {
-    const movePlayer = (pos, key) => {
-      let newRow = pos.row;
-      let newCol = pos.col;
+    const movePlayer = ({ key }) => {
+      setPlayerPos((currentPos) => {
+        let newRow = currentPos.row;
+        let newCol = currentPos.col;
 
-      // Update the position based on arrow keys
-      if (key === "ArrowUp") newRow--;
-      else if (key === "ArrowDown") newRow++;
-      else if (key === "ArrowLeft") newCol--;
-      else if (key === "ArrowRight") newCol++;
+        // Update the position based on arrow keys
+        if (key === "ArrowUp") newRow--;
+        else if (key === "ArrowDown") newRow++;
+        else if (key === "ArrowLeft") newCol--;
+        else if (key === "ArrowRight") newCol++;
 
-      // Ensure new position is within the maze and not a wall
-      if (maze[newRow] && maze[newRow][newCol] !== 1) {
-        return { row: newRow, col: newCol };
-      }
+        // Ensure new position is within the maze and not a wall
+        if (maze[newRow][newCol] !== 1) {
+          return { row: newRow, col: newCol };
+        }
 
-      // Return previous position if movement is invalid
-      return pos;
+        // Return previous position if movement is invalid
+        return currentPos;
+      });
     };
 
-    window.addEventListener("keydown", handlePlayerMove);
+    window.addEventListener("keydown", movePlayer);
 
     return () => {
-      window.removeEventListener("keydown", handlePlayerMove);
+      window.removeEventListener("keydown", movePlayer);
     };
-  }, [chaserPos, chaseePos]);
+  }, [maze]); // Add maze as a dependency
 
   return (
     <div>
@@ -64,10 +70,7 @@ function GameBoard({ players, handlePlayerMove }) {
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
 
-            if (
-              rowIndex === initialPositions.chaserPos.row &&
-              colIndex === initialPositions.chaserPos.col
-            ) {
+            if (rowIndex === playerPos.row && colIndex === playerPos.col) {
               backgroundColor = "blue"; // Chaser
             } else if (
               rowIndex === initialPositions.chaseePos.row &&

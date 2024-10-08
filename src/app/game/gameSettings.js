@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getNonOwnerRole } from "../utils";
 import { GAME_STATUS } from "../constants";
 
 export default function GameSettings({

@@ -100,47 +100,7 @@ export default function GameRoom({ params }) {
     if (settingsData) setRole(settingsData.role);
   }, [settingsData]);
 
-  //position of chaser and chasee
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      let newPos;
-
-      if (role === PLAYER_ROLES.CHASER) {
-        newPos = movePlayer(chaserPos, event.key);
-        setChaserPos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
-      } else if (role === PLAYER_ROLES.CHASEE) {
-        newPos = movePlayer(chaseePos, event.key);
-        setChaseePos(newPos);
-        socket.emit("playerMove", { roomId, role: "Chasee", newPos });
-      }
-    };
-
-    const movePlayer = (pos, key) => {
-      let newRow = pos.row;
-      let newCol = pos.col;
-
-      // Update the position based on arrow keys
-      if (key === "ArrowUp") newRow--;
-      else if (key === "ArrowDown") newRow++;
-      else if (key === "ArrowLeft") newCol--;
-      else if (key === "ArrowRight") newCol++;
-
-      // Ensure new position is within the maze and not a wall
-      if (maze[newRow] && maze[newRow][newCol] !== 1) {
-        return { row: newRow, col: newCol };
-      }
-
-      // Return previous position if movement is invalid
-      return pos;
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [chaserPos, chaseePos]);
+  //        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
 
   const handlePlayerMove = (event) => {
     let newPos;
