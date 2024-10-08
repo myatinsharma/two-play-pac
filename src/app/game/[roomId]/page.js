@@ -19,6 +19,7 @@ export default function GameRoom({ params }) {
   const [serverConnected, setServerConnected] = useState(false);
   const [players, setPlayers] = useState([]);
   const [player, setPlayer] = useState(null);
+  const [playerPos, setPlayerPos] = useState(null);
   const [role, setRole] = useState(null);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState({
@@ -77,12 +78,10 @@ export default function GameRoom({ params }) {
       setShowLoader(false);
     });
 
-    socket.on("playerMove", ({ role, newPos }) => {
-      if (role === "Chaser") {
-        setChaserPos(newPos);
-      } else if (role === "Chasee") {
-        setChaseePos(newPos);
-      }
+    socket.on("playerMove", (data) => {
+      console.log("playerMove", data);
+      setPlayerPos(data[socket.id]);
+      console.log("playerPos", data[socket.id]);
     });
 
     return () => {
@@ -92,7 +91,6 @@ export default function GameRoom({ params }) {
       socket.off("roomFull");
       socket.off("settingsUpdate");
       socket.off("playerMove");
-      socket.off("gameSettings");
       socket.disconnect();
     };
   }, [roomId]);
@@ -100,8 +98,6 @@ export default function GameRoom({ params }) {
   useEffect(() => {
     if (settingsData) setRole(settingsData.role);
   }, [settingsData]);
-
-  //        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
 
   const handleSettingsChange = (event) => {
     if (gameStatus === GAME_STATUS.STARTED) return;
@@ -125,8 +121,9 @@ export default function GameRoom({ params }) {
     }
   };
 
-  const handlePlayerMove = (event) => {
-    console.log("role1", event);
+  const handlePlayerMove = ({ row, col }) => {
+    console.log("pos", { row, col });
+    socket.emit("playerMove", { roomId, row, col });
   };
 
   return (
@@ -162,6 +159,7 @@ export default function GameRoom({ params }) {
           <>
             <GameBoard
               players={players}
+              playerPos={playerPos}
               role={player.role}
               handlePlayerMove={handlePlayerMove}
             />
