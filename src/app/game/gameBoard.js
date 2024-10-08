@@ -40,8 +40,6 @@ function GameBoard({ players, handlePlayerMove }) {
     let newRow = playerPos.row;
     let newCol = playerPos.col;
 
-    console.log("key", key, "newRow", newRow, "newCol", newCol);
-
     // Update the position based on arrow keys
     if (key === "ArrowUp") newRow--;
     else if (key === "ArrowDown") newRow++;
@@ -50,7 +48,6 @@ function GameBoard({ players, handlePlayerMove }) {
 
     // Ensure new position is within the maze and not a wall
     if (maze[newRow][newCol] !== 1) {
-      console.log("newRow", newRow, "newCol", newCol);
       setPlayerPos({ row: newRow, col: newCol });
     }
   };

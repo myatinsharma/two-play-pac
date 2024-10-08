@@ -41,6 +41,7 @@ export default function GameRoom({ params }) {
     socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
+      setShowLoader(false);
       console.log("roomData", data);
       setPlayers(data.players);
       const player = data.players.find((player) => player.id === socket.id);
@@ -102,25 +103,12 @@ export default function GameRoom({ params }) {
 
   //        socket.emit("playerMove", { roomId, role: "Chaser", newPos });
 
-  const handlePlayerMove = (event) => {
-    let newPos;
-
-    if (role === PLAYER_ROLES.CHASER) {
-      newPos = movePlayer(chaserPos, event.key);
-      setChaserPos(newPos);
-      socket.emit("playerMove", { roomId, role: "Chaser", newPos });
-    } else if (role === PLAYER_ROLES.CHASEE) {
-      newPos = movePlayer(chaseePos, event.key);
-      setChaseePos(newPos);
-      socket.emit("playerMove", { roomId, role: "Chasee", newPos });
-    }
-  };
-
   const handleSettingsChange = (event) => {
     if (gameStatus === GAME_STATUS.STARTED) return;
     setShowLoader(true);
     const { name, value } = event.target;
     if (name === "role") {
+      console.log("role0", value);
       socket.emit("roleChosen", { roomId, role: parseInt(value) });
     } else {
       const updatedSettings = {
