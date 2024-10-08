@@ -125,6 +125,10 @@ export default function GameRoom({ params }) {
     }
   };
 
+  const handlePlayerMove = (event) => {
+    console.log("role1", event);
+  };
+
   return (
     <div>
       <h2>Room: {roomId}</h2>
