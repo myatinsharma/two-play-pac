@@ -18,8 +18,6 @@ export default function GameRoom({ params }) {
   const [showLoader, setShowLoader] = useState(false);
   const [serverConnected, setServerConnected] = useState(false);
   const [players, setPlayers] = useState([]);
-  const [player, setPlayer] = useState(null);
-  const [playerPos, setPlayerPos] = useState(null);
   const [playersPos, setPlayersPos] = useState(null);
   const [role, setRole] = useState(null);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
@@ -27,6 +25,7 @@ export default function GameRoom({ params }) {
     timeLimit: "30",
     smoreCount: "2",
     totalRounds: "3",
+    maze: "0",
   });
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -46,7 +45,7 @@ export default function GameRoom({ params }) {
       setShowLoader(false);
       setPlayers(data.players);
       const player = data.players.find((player) => player.id === socket.id);
-      setPlayer(player);
+      setRole(player.role);
       setServerConnected(true);
 
       if (
@@ -73,7 +72,7 @@ export default function GameRoom({ params }) {
       socket.disconnect();
     });
 
-    socket.on("settingsUpdate", (settings) => {
+    socket.on("settingsUpdate", ({ settings, mazeMap }) => {
       setGameSettings(settings);
       setShowLoader(false);
     });
@@ -133,7 +132,7 @@ export default function GameRoom({ params }) {
           isRoomOwner={isRoomOwner}
           settingsData={settingsData}
           gameStatus={gameStatus}
-          role={player.role}
+          role={role}
           handleSettingsChange={handleSettingsChange}
         ></GameSettings>
       )}
@@ -154,9 +153,8 @@ export default function GameRoom({ params }) {
         players.length === 2 && (
           <>
             <GameBoard
-              playerPos={playerPos}
               playersPos={playersPos}
-              role={player.role}
+              role={role}
               handlePlayerMove={handlePlayerMove}
             />
           </>

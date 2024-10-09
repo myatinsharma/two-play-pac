@@ -18,6 +18,12 @@
     "roles": [
       { "value": 1, "label": "Chaser" },
       { "value": 2, "label": "Chasee" }
+    ],
+    "maze": [
+      { "value": 0, "label": "Random" },
+      { "value": 1, "label": "Maze 1" },
+      { "value": 2, "label": "Maze 2" },
+      { "value": 3, "label": "Maze 3" }
     ]
   }
   

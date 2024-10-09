@@ -71,6 +71,22 @@ export default function GameSettings({
         </label>
         <br />
         <label>
+          Maze:
+          <select
+            name="maze"
+            onChange={handleSettingsChange}
+            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            value={settingsData ? settingsData.maze : ""}
+          >
+            {settingOptionsData.maze.map((maze) => (
+              <option key={maze.value} value={maze.value}>
+                {maze.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <br />
+        <label>
           Your Role:
           <select
             name="role"

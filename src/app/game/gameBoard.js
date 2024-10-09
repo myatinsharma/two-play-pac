@@ -5,7 +5,7 @@ import {
   PLAYER_ROLES,
 } from "../constants";
 
-function GameBoard({ playersPos, playerPos, role, handlePlayerMove }) {
+function GameBoard({ playersPos, role, handlePlayerMove }) {
   const initialMaze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
