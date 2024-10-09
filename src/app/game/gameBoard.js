@@ -5,24 +5,7 @@ import {
   PLAYER_ROLES,
 } from "../constants";
 
-function GameBoard({ playersPos, role, handlePlayerMove }) {
-  const initialMaze = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  ];
-  const [maze, setMaze] = useState(initialMaze);
-
-  const initialPositions = {
-    chaserPos: { row: 1, col: 1 },
-    chaseePos: { row: 6, col: 7 },
-  };
-
+function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
   useEffect(() => {
     const movePlayer = ({ key }) => {
       const getInitialPosition = (role, axis) => {
@@ -30,8 +13,8 @@ function GameBoard({ playersPos, role, handlePlayerMove }) {
           return playersPos[role][axis];
         }
         return role === PLAYER_ROLES.CHASER
-          ? initialPositions.chaserPos[axis]
-          : initialPositions.chaseePos[axis];
+          ? mazeMap.startingPosition.chaser[axis]
+          : mazeMap.startingPosition.chasee[axis];
       };
 
       let newRow = getInitialPosition(role, "row");
@@ -65,29 +48,29 @@ function GameBoard({ playersPos, role, handlePlayerMove }) {
           gridTemplateColumns: `repeat(${maze[0].length}, 20px)`,
         }}
       >
-        {maze.flatMap((row, rowIndex) =>
+        {mazeMap.maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
             if (
               rowIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASER]
                   ? playersPos[PLAYER_ROLES.CHASER].row
-                  : initialPositions.chaserPos.row) &&
+                  : mazeMap.startingPosition.chaser.row) &&
               colIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASER]
                   ? playersPos[PLAYER_ROLES.CHASER].col
-                  : initialPositions.chaserPos.col)
+                  : mazeMap.startingPosition.chaser.col)
             ) {
               backgroundColor = "blue"; // Chaser
             } else if (
               rowIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASEE]
                   ? playersPos[PLAYER_ROLES.CHASEE].row
-                  : initialPositions.chaseePos.row) &&
+                  : mazeMap.startingPosition.chasee.row) &&
               colIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASEE]
                   ? playersPos[PLAYER_ROLES.CHASEE].col
-                  : initialPositions.chaseePos.col)
+                  : mazeMap.startingPosition.chasee.col)
             ) {
               backgroundColor = "red"; // Chasee
             } else if (cell === 1) {

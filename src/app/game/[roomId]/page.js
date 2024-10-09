@@ -27,6 +27,7 @@ export default function GameRoom({ params }) {
     totalRounds: "3",
     maze: "0",
   });
+  const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export default function GameRoom({ params }) {
 
     socket.on("settingsUpdate", ({ settings, mazeMap }) => {
       setGameSettings(settings);
+      setMazeMap(mazeMap);
       setShowLoader(false);
     });
 
@@ -150,9 +152,11 @@ export default function GameRoom({ params }) {
       )}
       {gameStatus === GAME_STATUS.STARTED &&
         settingsData &&
-        players.length === 2 && (
+        players.length === 2 &&
+        mazeMap && (
           <>
             <GameBoard
+              mazeMap={mazeMap}
               playersPos={playersPos}
               role={role}
               handlePlayerMove={handlePlayerMove}
