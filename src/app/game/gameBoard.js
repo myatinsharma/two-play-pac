@@ -5,7 +5,7 @@ import {
   PLAYER_ROLES,
 } from "../constants";
 
-function GameBoard({ players, playerPos, role, handlePlayerMove }) {
+function GameBoard({ playersPos, playerPos, role, handlePlayerMove }) {
   const initialMaze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
@@ -26,10 +26,8 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
   useEffect(() => {
     const movePlayer = ({ key }) => {
       const getInitialPosition = (role, axis) => {
-        console.log("playerPos_not", playerPos);
-        if (playerPos) {
-          console.log("playerPos001", playerPos);
-          return playerPos[axis];
+        if (playersPos) {
+          return playersPos[role][axis];
         }
         return role === PLAYER_ROLES.CHASER
           ? initialPositions.chaserPos[axis]
@@ -44,14 +42,10 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
       else if (key === "ArrowDown") newRow++;
       else if (key === "ArrowLeft") newCol--;
       else if (key === "ArrowRight") newCol++;
-      console.log("key002", key);
 
       // Ensure new position is within the maze and not a wall
       if (maze[newRow][newCol] !== 1) {
-        console.log("Valid move", { row: newRow, col: newCol });
         handlePlayerMove({ row: newRow, col: newCol });
-      } else {
-        console.log("Invalid move");
       }
     };
 
@@ -60,7 +54,7 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
     return () => {
       window.removeEventListener("keydown", movePlayer);
     };
-  }, [maze, role, playerPos]);
+  }, [maze, role, playersPos]);
 
   return (
     <div>
@@ -74,26 +68,26 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
         {maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
-
+            console.log("playersPos", playersPos);
             if (
               rowIndex ===
-                (role === PLAYER_ROLES.CHASER && playerPos
-                  ? playerPos.row
+                (playersPos && playersPos[PLAYER_ROLES.CHASER]
+                  ? playersPos[PLAYER_ROLES.CHASER].row
                   : initialPositions.chaserPos.row) &&
               colIndex ===
-                (role === PLAYER_ROLES.CHASER && playerPos
-                  ? playerPos.col
+                (playersPos && playersPos[PLAYER_ROLES.CHASER]
+                  ? playersPos[PLAYER_ROLES.CHASER].col
                   : initialPositions.chaserPos.col)
             ) {
               backgroundColor = "blue"; // Chaser
             } else if (
               rowIndex ===
-                (role === PLAYER_ROLES.CHASEE && playerPos
-                  ? playerPos.row
+                (playersPos && playersPos[PLAYER_ROLES.CHASEE]
+                  ? playersPos[PLAYER_ROLES.CHASEE].row
                   : initialPositions.chaseePos.row) &&
               colIndex ===
-                (role === PLAYER_ROLES.CHASEE && playerPos
-                  ? playerPos.col
+                (playersPos && playersPos[PLAYER_ROLES.CHASEE]
+                  ? playersPos[PLAYER_ROLES.CHASEE].col
                   : initialPositions.chaseePos.col)
             ) {
               backgroundColor = "red"; // Chasee

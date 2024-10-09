@@ -20,6 +20,7 @@ export default function GameRoom({ params }) {
   const [players, setPlayers] = useState([]);
   const [player, setPlayer] = useState(null);
   const [playerPos, setPlayerPos] = useState(null);
+  const [playersPos, setPlayersPos] = useState(null);
   const [role, setRole] = useState(null);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState({
@@ -43,7 +44,6 @@ export default function GameRoom({ params }) {
 
     socket.on("roomData", (data) => {
       setShowLoader(false);
-      console.log("roomData", data);
       setPlayers(data.players);
       const player = data.players.find((player) => player.id === socket.id);
       setPlayer(player);
@@ -79,9 +79,7 @@ export default function GameRoom({ params }) {
     });
 
     socket.on("playerMove", (data) => {
-      console.log("playerMove", data);
-      setPlayerPos(data[socket.id]);
-      console.log("playerPos", data[socket.id]);
+      setPlayersPos(data);
     });
 
     return () => {
@@ -104,7 +102,6 @@ export default function GameRoom({ params }) {
     setShowLoader(true);
     const { name, value } = event.target;
     if (name === "role") {
-      console.log("role0", value);
       socket.emit("roleChosen", { roomId, role: parseInt(value) });
     } else {
       const updatedSettings = {
@@ -122,7 +119,6 @@ export default function GameRoom({ params }) {
   };
 
   const handlePlayerMove = ({ row, col }) => {
-    console.log("pos", { row, col });
     socket.emit("playerMove", { roomId, row, col });
   };
 
@@ -158,8 +154,8 @@ export default function GameRoom({ params }) {
         players.length === 2 && (
           <>
             <GameBoard
-              players={players}
               playerPos={playerPos}
+              playersPos={playersPos}
               role={player.role}
               handlePlayerMove={handlePlayerMove}
             />
