@@ -68,7 +68,6 @@ function GameBoard({ playersPos, playerPos, role, handlePlayerMove }) {
         {maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
-            console.log("playersPos", playersPos);
             if (
               rowIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASER]
