@@ -17,7 +17,6 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
   ];
   const [maze, setMaze] = useState(initialMaze);
-  const [playerStartedMoving, setPlayerStartedMoving] = useState(false);
 
   const initialPositions = {
     chaserPos: { row: 1, col: 1 },
@@ -26,31 +25,33 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
 
   useEffect(() => {
     const movePlayer = ({ key }) => {
-      console.log("playerStartedMoving", playerStartedMoving);
-      if (!playerStartedMoving) {
-        setPlayerStartedMoving(true);
-      }
+      const getInitialPosition = (role, axis) => {
+        console.log("playerPos_not", playerPos);
+        if (playerPos) {
+          console.log("playerPos001", playerPos);
+          return playerPos[axis];
+        }
+        return role === PLAYER_ROLES.CHASER
+          ? initialPositions.chaserPos[axis]
+          : initialPositions.chaseePos[axis];
+      };
 
-      let newRow = playerStartedMoving
-        ? playerPos.row
-        : role === PLAYER_ROLES.CHASER
-        ? initialPositions.chaserPos.row
-        : initialPositions.chaseePos.row;
-      let newCol = playerStartedMoving
-        ? playerPos.col
-        : role === PLAYER_ROLES.CHASER
-        ? initialPositions.chaserPos.col
-        : initialPositions.chaseePos.col;
+      let newRow = getInitialPosition(role, "row");
+      let newCol = getInitialPosition(role, "col");
 
       // Update the position based on arrow keys
       if (key === "ArrowUp") newRow--;
       else if (key === "ArrowDown") newRow++;
       else if (key === "ArrowLeft") newCol--;
       else if (key === "ArrowRight") newCol++;
+      console.log("key002", key);
 
       // Ensure new position is within the maze and not a wall
       if (maze[newRow][newCol] !== 1) {
-        handlePlayerMove([{ row: newRow, col: newCol }]);
+        console.log("Valid move", { row: newRow, col: newCol });
+        handlePlayerMove({ row: newRow, col: newCol });
+      } else {
+        console.log("Invalid move");
       }
     };
 
@@ -59,7 +60,7 @@ function GameBoard({ players, playerPos, role, handlePlayerMove }) {
     return () => {
       window.removeEventListener("keydown", movePlayer);
     };
-  }, [maze]); // Add maze as a dependency
+  }, [maze, role, playerPos]);
 
   return (
     <div>
