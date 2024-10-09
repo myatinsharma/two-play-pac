@@ -26,7 +26,7 @@ function GameBoard({ playersPos, playerPos, role, handlePlayerMove }) {
   useEffect(() => {
     const movePlayer = ({ key }) => {
       const getInitialPosition = (role, axis) => {
-        if (playersPos) {
+        if (playersPos && playersPos[role]) {
           return playersPos[role][axis];
         }
         return role === PLAYER_ROLES.CHASER
