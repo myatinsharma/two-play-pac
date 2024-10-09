@@ -39,7 +39,7 @@ export default function GameRoom({ params }) {
 
     if (!roomId) return;
 
-    socket = io("http://localhost:80");
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
