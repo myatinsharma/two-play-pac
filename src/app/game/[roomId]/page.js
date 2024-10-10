@@ -21,12 +21,7 @@ export default function GameRoom({ params }) {
   const [playersPos, setPlayersPos] = useState(null);
   const [role, setRole] = useState(null);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
-  const [settingsData, setGameSettings] = useState({
-    timeLimit: "30",
-    smoreCount: "2",
-    totalRounds: "3",
-    maze: "0",
-  });
+  const [settingsData, setGameSettings] = useState(null);
   const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
 
@@ -44,9 +39,10 @@ export default function GameRoom({ params }) {
 
     socket.on("roomData", (data) => {
       setShowLoader(false);
+      setGameSettings(data.settings);
+      setMazeMap(data.mazeMap);
       setPlayers(data.players);
-      const player = data.players.find((player) => player.id === socket.id);
-      setRole(player.role);
+      setRole(data.players.find((player) => player.id === socket.id).role);
       setServerConnected(true);
 
       if (
@@ -60,6 +56,11 @@ export default function GameRoom({ params }) {
         setIsRoomOwner(false);
         localStorage.removeItem("roomOwner");
       }
+    });
+
+    socket.on("roleUpdate", ({ players }) => {
+      setPlayers(players);
+      setRole(players.find((player) => player.id === socket.id).role);
     });
 
     socket.on("startGame", ({ status }) => {
@@ -93,10 +94,6 @@ export default function GameRoom({ params }) {
       socket.disconnect();
     };
   }, [roomId]);
-
-  useEffect(() => {
-    if (settingsData) setRole(settingsData.role);
-  }, [settingsData]);
 
   const handleSettingsChange = (event) => {
     if (gameStatus === GAME_STATUS.STARTED) return;
