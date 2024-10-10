@@ -4,11 +4,7 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import {
-  GAME_STATUS,
-  GAME_STATUS_DESCRIPTION,
-  PLAYER_ROLES,
-} from "../../constants";
+import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 
 let socket;
 
@@ -20,6 +16,7 @@ export default function GameRoom({ params }) {
   const [players, setPlayers] = useState([]);
   const [playersPos, setPlayersPos] = useState(null);
   const [role, setRole] = useState(null);
+  const [playerDisconnected, setPlayerDisconnected] = useState(false);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState(null);
   const [mazeMap, setMazeMap] = useState(null);
@@ -38,6 +35,10 @@ export default function GameRoom({ params }) {
     socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
+      console.log("roomData", data);
+      if (data.status === GAME_STATUS.PLAYER_DISCONNECTED) {
+        setPlayerDisconnected(true);
+      }
       setShowLoader(false);
       setGameSettings(data.settings);
       setMazeMap(data.mazeMap);
@@ -45,11 +46,7 @@ export default function GameRoom({ params }) {
       setRole(data.players.find((player) => player.id === socket.id).role);
       setServerConnected(true);
 
-      if (
-        data.players.find(
-          (player) => player.id === socket.id && player.roomOwner
-        )
-      ) {
+      if (data.roomOwner === socket.id) {
         setIsRoomOwner(true);
         localStorage.setItem("roomOwner", roomId);
       } else {
@@ -163,6 +160,11 @@ export default function GameRoom({ params }) {
       {showLoader && (
         <div className="loader-container">
           <div className="loader"></div>
+        </div>
+      )}
+      {playerDisconnected && players.length === 1 && (
+        <div className="player-disconnected-container">
+          <p>Player Disconnected</p>
         </div>
       )}
     </div>

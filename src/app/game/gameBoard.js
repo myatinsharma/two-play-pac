@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  GAME_STATUS,
-  GAME_STATUS_DESCRIPTION,
-  PLAYER_ROLES,
-} from "../constants";
+import { PLAYER_ROLES } from "../constants";
 
 function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
   useEffect(() => {
     const movePlayer = ({ key }) => {
       const getInitialPosition = (role, axis) => {
+        console.log("playersPos00", role, axis);
         if (playersPos && playersPos[role]) {
           return playersPos[role][axis];
         }

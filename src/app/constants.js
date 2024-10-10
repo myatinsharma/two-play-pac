@@ -3,12 +3,14 @@ const GAME_STATUS = Object.freeze({
   NOT_STARTED: 1,
   STARTED: 2,
   GAME_OVER: 3,
+  PLAYER_DISCONNECTED: 4,
 });
 
 const GAME_STATUS_DESCRIPTION = Object.freeze({
   1: "Not Started",
   2: "Started",
   3: "Game Over",
+  4: "Player Disconnected",
 });
 
 export { GAME_STATUS, GAME_STATUS_DESCRIPTION, PLAYER_ROLES };
