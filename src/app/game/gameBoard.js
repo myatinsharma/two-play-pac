@@ -27,14 +27,13 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
       else if (key === "ArrowRight") newCol++;
 
       // Ensure new position is within the maze and not a wall
-      const isWithinMaze =
+      if (
         newRow >= 0 &&
         newRow < mazeMap.maze.length &&
         newCol >= 0 &&
-        newCol < mazeMap.maze[0].length;
-      const isNotWall = mazeMap.maze[newRow][newCol] !== 1;
-
-      if (isWithinMaze && isNotWall) {
+        newCol < mazeMap.maze[0].length &&
+        mazeMap.maze[newRow][newCol] !== 1
+      ) {
         handlePlayerMove({ row: newRow, col: newCol });
       }
     };
@@ -44,7 +43,7 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
     return () => {
       window.removeEventListener("keydown", movePlayer);
     };
-  }, [mazeMap, role, playersPos]);
+  }, [mazeMap, role, playersPos, handlePlayerMove]);
 
   return (
     <div>
