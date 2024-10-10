@@ -41,8 +41,10 @@ export default function GameRoom({ params }) {
       }
       setShowLoader(false);
       setGameSettings(data.settings);
+      setGameStatus(data.status);
       setMazeMap(data.mazeMap);
       setPlayers(data.players);
+      setPlayersPos(data.playersPos);
       setRole(data.players.find((player) => player.id === socket.id).role);
       setServerConnected(true);
 
