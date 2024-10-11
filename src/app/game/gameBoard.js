@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { PLAYER_ROLES } from "../constants";
 
 function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
-  useEffect(() => {
-    const movePlayer = ({ key }) => {
+  const [currentDirection, setCurrentDirection] = useState(null);
+  const [lastMoveTime, setLastMoveTime] = useState(0);
+
+  const movePlayer = useCallback(
+    (direction) => {
       const getInitialPosition = (role, axis) => {
-        console.log("playersPos00", role, axis);
         if (playersPos && playersPos[role]) {
           return playersPos[role][axis];
         }
@@ -17,11 +19,11 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
       let newRow = getInitialPosition(role, "row");
       let newCol = getInitialPosition(role, "col");
 
-      // Update the position based on arrow keys
-      if (key === "ArrowUp") newRow--;
-      else if (key === "ArrowDown") newRow++;
-      else if (key === "ArrowLeft") newCol--;
-      else if (key === "ArrowRight") newCol++;
+      // Update the position based on direction
+      if (direction === "up") newRow--;
+      else if (direction === "down") newRow++;
+      else if (direction === "left") newCol--;
+      else if (direction === "right") newCol++;
 
       // Ensure new position is within the maze and not a wall
       if (
@@ -33,14 +35,63 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
       ) {
         handlePlayerMove({ row: newRow, col: newCol });
       }
+    },
+    [playersPos, mazeMap, role, handlePlayerMove]
+  );
+
+  useEffect(() => {
+    let animationFrameId;
+    const moveInterval = 100; // Adjust this value to change movement speed
+
+    const gameLoop = (timestamp) => {
+      if (currentDirection && timestamp - lastMoveTime >= moveInterval) {
+        movePlayer(currentDirection);
+        setLastMoveTime(timestamp);
+      }
+      animationFrameId = requestAnimationFrame(gameLoop);
     };
 
-    window.addEventListener("keydown", movePlayer);
+    const handleKeyDown = (event) => {
+      let direction;
+      switch (event.key) {
+        case "ArrowUp":
+          direction = "up";
+          break;
+        case "ArrowDown":
+          direction = "down";
+          break;
+        case "ArrowLeft":
+          direction = "left";
+          break;
+        case "ArrowRight":
+          direction = "right";
+          break;
+        default:
+          return; // If it's not an arrow key, do nothing
+      }
+
+      setCurrentDirection(direction);
+    };
+
+    const handleKeyUp = (event) => {
+      if (
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)
+      ) {
+        setCurrentDirection(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    animationFrameId = requestAnimationFrame(gameLoop);
 
     return () => {
-      window.removeEventListener("keydown", movePlayer);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [mazeMap, role, playersPos, handlePlayerMove]);
+  }, [movePlayer, currentDirection, lastMoveTime]);
 
   return (
     <div>
