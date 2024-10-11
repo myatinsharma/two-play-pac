@@ -135,17 +135,15 @@ export default function GameRoom({ params }) {
         ></GameSettings>
       )}
       {isRoomOwner &&
-      gameStatus === GAME_STATUS.NOT_STARTED &&
-      settingsData &&
-      players.length === 2 ? (
-        <button onClick={startGame}>Start Game</button>
-      ) : (
-        <p>
-          {isRoomOwner
-            ? "Waiting for another user.."
-            : "Waiting for game to start..."}
-        </p>
+        gameStatus === GAME_STATUS.NOT_STARTED &&
+        settingsData &&
+        players.length === 2 && <button onClick={startGame}>Start Game</button>}
+      {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
+        <p>Waiting for another user..</p>
       )}
+      {gameStatus === GAME_STATUS.NOT_STARTED &&
+        players.length === 2 &&
+        !isRoomOwner && <p>Waiting for another player to start..</p>}
       {gameStatus === GAME_STATUS.STARTED &&
         settingsData &&
         players.length === 2 &&
