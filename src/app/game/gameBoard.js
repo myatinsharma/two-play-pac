@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { PLAYER_ROLES } from "../constants";
+import { PLAYER_ROLES, GAME_STATUS } from "../constants";
 
-function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
+function GameBoard({
+  playersPos,
+  mazeMap,
+  role,
+  handlePlayerMove,
+  gameStatus,
+}) {
   const [currentDirection, setCurrentDirection] = useState(null);
   const [lastMoveTime, setLastMoveTime] = useState(0);
 
@@ -44,7 +50,11 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
     const moveInterval = 100; // Adjust this value to change movement speed
 
     const gameLoop = (timestamp) => {
-      if (currentDirection && timestamp - lastMoveTime >= moveInterval) {
+      if (
+        currentDirection &&
+        timestamp - lastMoveTime >= moveInterval &&
+        gameStatus !== GAME_STATUS.GAME_OVER
+      ) {
         movePlayer(currentDirection);
         setLastMoveTime(timestamp);
       }
@@ -52,6 +62,10 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
     };
 
     const handleKeyDown = (event) => {
+      if (gameStatus === GAME_STATUS.GAME_OVER) {
+        return; // Ignore key presses when the game is over
+      }
+
       let direction;
       switch (event.key) {
         case "ArrowUp":
@@ -91,7 +105,13 @@ function GameBoard({ playersPos, mazeMap, role, handlePlayerMove }) {
       window.removeEventListener("keyup", handleKeyUp);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [movePlayer, currentDirection, lastMoveTime]);
+  }, [movePlayer, currentDirection, lastMoveTime, gameStatus]);
+
+  useEffect(() => {
+    if (gameStatus === GAME_STATUS.GAME_OVER) {
+      setCurrentDirection(null);
+    }
+  }, [gameStatus]);
 
   return (
     <div>

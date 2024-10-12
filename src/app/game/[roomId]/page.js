@@ -164,6 +164,7 @@ export default function GameRoom({ params }) {
             playersPos={playersPos}
             role={role}
             handlePlayerMove={handlePlayerMove}
+            gameStatus={gameStatus}
           />
         )}
       {showLoader && (
@@ -187,6 +188,7 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
         <p>You lost the game</p>
       )}
+      <button onClick={() => router.push("/")}>Go to Home</button>
     </div>
   );
 }
