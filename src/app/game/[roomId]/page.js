@@ -4,11 +4,7 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import {
-  GAME_STATUS,
-  GAME_STATUS_DESCRIPTION,
-  PLAYER_ROLES,
-} from "../../constants";
+import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 
 let socket;
 
@@ -188,7 +184,10 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
         <p>You lost the game</p>
       )}
-      <button onClick={() => router.push("/")}>Go to Home</button>
+      {gameStatus === GAME_STATUS.GAME_OVER && (
+        //Play again button - it should refresh page
+        <button onClick={() => window.location.reload()}>Play Again</button>
+      )}
     </div>
   );
 }
