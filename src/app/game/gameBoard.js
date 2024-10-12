@@ -125,6 +125,8 @@ function GameBoard({
         {mazeMap.maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
             let backgroundColor = "white";
+            let cellContent = null;
+
             if (
               rowIndex ===
                 (playersPos && playersPos[PLAYER_ROLES.CHASER]
@@ -150,7 +152,18 @@ function GameBoard({
             } else if (cell === 1) {
               backgroundColor = "black"; // Wall
             } else if (cell === 2) {
-              backgroundColor = "yellow"; // S'more
+              backgroundColor = "white"; // Keep cell white
+              cellContent = (
+                <div
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: "50%",
+                    backgroundColor: "#4dc513", // Always yellow, no blinking
+                    margin: "4px auto",
+                  }}
+                />
+              ); // S'more (static yellow dot)
             }
 
             return (
@@ -161,8 +174,13 @@ function GameBoard({
                   height: 20,
                   backgroundColor,
                   border: "1px solid gray",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-              ></div>
+              >
+                {cellContent}
+              </div>
             );
           })
         )}
