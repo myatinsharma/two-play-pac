@@ -4,7 +4,11 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
+import {
+  GAME_STATUS,
+  GAME_STATUS_DESCRIPTION,
+  PLAYER_ROLES,
+} from "../../constants";
 
 let socket;
 
@@ -16,6 +20,7 @@ export default function GameRoom({ params }) {
   const [players, setPlayers] = useState([]);
   const [playersPos, setPlayersPos] = useState(null);
   const [role, setRole] = useState(null);
+  const [winner, setWinner] = useState(null);
   const [playerDisconnected, setPlayerDisconnected] = useState(false);
   const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED);
   const [settingsData, setGameSettings] = useState(null);
@@ -44,7 +49,7 @@ export default function GameRoom({ params }) {
       setGameStatus(data.status);
       setMazeMap(data.mazeMap);
       setPlayers(data.players);
-      setPlayersPos(data.playersPos);
+      setPlayersPos(data.playersPosition);
       setRole(data.players.find((player) => player.id === socket.id).role);
       setServerConnected(true);
 
@@ -58,6 +63,7 @@ export default function GameRoom({ params }) {
     });
 
     socket.on("roleUpdate", ({ players }) => {
+      console.log("roleUpdate", players);
       setPlayers(players);
       setRole(players.find((player) => player.id === socket.id).role);
     });
@@ -79,8 +85,13 @@ export default function GameRoom({ params }) {
       setShowLoader(false);
     });
 
-    socket.on("playerMove", (data) => {
-      setPlayersPos(data);
+    socket.on("playerMove", ({ playersPosition, mazeMap, winner }) => {
+      setMazeMap(mazeMap);
+      setPlayersPos(playersPosition);
+      if (winner) {
+        setWinner(winner);
+        setGameStatus(GAME_STATUS.GAME_OVER);
+      }
     });
 
     return () => {
@@ -144,18 +155,16 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.NOT_STARTED &&
         players.length === 2 &&
         !isRoomOwner && <p>Waiting for another player to start..</p>}
-      {gameStatus === GAME_STATUS.STARTED &&
+      {(gameStatus === GAME_STATUS.GAME_OVER ||
+        (gameStatus === GAME_STATUS.STARTED && players.length === 2)) &&
         settingsData &&
-        players.length === 2 &&
         mazeMap && (
-          <>
-            <GameBoard
-              mazeMap={mazeMap}
-              playersPos={playersPos}
-              role={role}
-              handlePlayerMove={handlePlayerMove}
-            />
-          </>
+          <GameBoard
+            mazeMap={mazeMap}
+            playersPos={playersPos}
+            role={role}
+            handlePlayerMove={handlePlayerMove}
+          />
         )}
       {showLoader && (
         <div className="loader-container">
@@ -166,6 +175,17 @@ export default function GameRoom({ params }) {
         <div className="player-disconnected-container">
           <p>Player Disconnected</p>
         </div>
+      )}
+      {gameStatus === GAME_STATUS.GAME_OVER && (
+        <div className="game-over-container">
+          <p>Game Over</p>
+        </div>
+      )}
+      {gameStatus === GAME_STATUS.GAME_OVER && winner === role && (
+        <p>You won the game</p>
+      )}
+      {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
+        <p>You lost the game</p>
       )}
     </div>
   );
