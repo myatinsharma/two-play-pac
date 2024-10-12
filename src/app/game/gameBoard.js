@@ -113,6 +113,16 @@ function GameBoard({
     }
   }, [gameStatus]);
 
+  const handleArrowClick = (direction) => {
+    if (gameStatus !== GAME_STATUS.GAME_OVER) {
+      setCurrentDirection(direction);
+    }
+  };
+
+  const handleArrowRelease = () => {
+    setCurrentDirection(null);
+  };
+
   return (
     <div>
       <h3>Game Board</h3>
@@ -185,8 +195,66 @@ function GameBoard({
           })
         )}
       </div>
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onTouchStart={() => handleArrowClick("up")}
+          onTouchEnd={handleArrowRelease}
+          onMouseDown={() => handleArrowClick("up")}
+          onMouseUp={handleArrowRelease}
+          style={arrowButtonStyle}
+        >
+          ▲
+        </button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onTouchStart={() => handleArrowClick("left")}
+            onTouchEnd={handleArrowRelease}
+            onMouseDown={() => handleArrowClick("left")}
+            onMouseUp={handleArrowRelease}
+            style={arrowButtonStyle}
+          >
+            ◀
+          </button>
+          <button
+            onTouchStart={() => handleArrowClick("down")}
+            onTouchEnd={handleArrowRelease}
+            onMouseDown={() => handleArrowClick("down")}
+            onMouseUp={handleArrowRelease}
+            style={arrowButtonStyle}
+          >
+            ▼
+          </button>
+          <button
+            onTouchStart={() => handleArrowClick("right")}
+            onTouchEnd={handleArrowRelease}
+            onMouseDown={() => handleArrowClick("right")}
+            onMouseUp={handleArrowRelease}
+            style={arrowButtonStyle}
+          >
+            ▶
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
+
+const arrowButtonStyle = {
+  width: "60px",
+  height: "60px",
+  fontSize: "24px",
+  margin: "5px",
+  backgroundColor: "#f0f0f0",
+  border: "1px solid #ccc",
+  borderRadius: "5px",
+  cursor: "pointer",
+};
 
 export default GameBoard;
