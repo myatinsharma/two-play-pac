@@ -10,6 +10,7 @@ function GameBoard({
 }) {
   const [currentDirection, setCurrentDirection] = useState(null);
   const [lastMoveTime, setLastMoveTime] = useState(0);
+  const [showArrows, setShowArrows] = useState(false);
 
   const movePlayer = useCallback(
     (direction) => {
@@ -123,6 +124,10 @@ function GameBoard({
     setCurrentDirection(null);
   };
 
+  const toggleArrows = () => {
+    setShowArrows((prev) => !prev);
+  };
+
   return (
     <div>
       <h3>Game Board</h3>
@@ -195,53 +200,58 @@ function GameBoard({
           })
         )}
       </div>
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <button
-          onTouchStart={() => handleArrowClick("up")}
-          onTouchEnd={handleArrowRelease}
-          onMouseDown={() => handleArrowClick("up")}
-          onMouseUp={handleArrowRelease}
-          style={arrowButtonStyle}
+      <button onClick={toggleArrows} style={toggleButtonStyle}>
+        {showArrows ? "Hide" : "Show"} Arrows
+      </button>
+      {showArrows && (
+        <div
+          style={{
+            marginTop: "20px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          ▲
-        </button>
-        <div style={{ display: "flex", justifyContent: "center" }}>
           <button
-            onTouchStart={() => handleArrowClick("left")}
+            onTouchStart={() => handleArrowClick("up")}
             onTouchEnd={handleArrowRelease}
-            onMouseDown={() => handleArrowClick("left")}
+            onMouseDown={() => handleArrowClick("up")}
             onMouseUp={handleArrowRelease}
             style={arrowButtonStyle}
           >
-            ◀
+            ▲
           </button>
-          <button
-            onTouchStart={() => handleArrowClick("down")}
-            onTouchEnd={handleArrowRelease}
-            onMouseDown={() => handleArrowClick("down")}
-            onMouseUp={handleArrowRelease}
-            style={arrowButtonStyle}
-          >
-            ▼
-          </button>
-          <button
-            onTouchStart={() => handleArrowClick("right")}
-            onTouchEnd={handleArrowRelease}
-            onMouseDown={() => handleArrowClick("right")}
-            onMouseUp={handleArrowRelease}
-            style={arrowButtonStyle}
-          >
-            ▶
-          </button>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <button
+              onTouchStart={() => handleArrowClick("left")}
+              onTouchEnd={handleArrowRelease}
+              onMouseDown={() => handleArrowClick("left")}
+              onMouseUp={handleArrowRelease}
+              style={arrowButtonStyle}
+            >
+              ◀
+            </button>
+            <button
+              onTouchStart={() => handleArrowClick("down")}
+              onTouchEnd={handleArrowRelease}
+              onMouseDown={() => handleArrowClick("down")}
+              onMouseUp={handleArrowRelease}
+              style={arrowButtonStyle}
+            >
+              ▼
+            </button>
+            <button
+              onTouchStart={() => handleArrowClick("right")}
+              onTouchEnd={handleArrowRelease}
+              onMouseDown={() => handleArrowClick("right")}
+              onMouseUp={handleArrowRelease}
+              style={arrowButtonStyle}
+            >
+              ▶
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -255,6 +265,17 @@ const arrowButtonStyle = {
   border: "1px solid #ccc",
   borderRadius: "5px",
   cursor: "pointer",
+};
+
+const toggleButtonStyle = {
+  padding: "10px 15px",
+  fontSize: "16px",
+  backgroundColor: "#4CAF50",
+  color: "white",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  marginTop: "10px",
 };
 
 export default GameBoard;
