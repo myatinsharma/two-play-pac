@@ -89,7 +89,10 @@ export default function GameRoom({ params }) {
     socket.on("playerMove", ({ playersPosition, mazeMap, winner }) => {
       setMazeMap(mazeMap);
       setPlayersPos(playersPosition);
-      if (winner) {
+      if (winner === 0) {
+        setWinner(null);
+        setGameStatus(GAME_STATUS.TIME_UP);
+      } else if (winner === 1 || winner === 2) {
         setWinner(winner);
         setGameStatus(GAME_STATUS.GAME_OVER);
       }
@@ -162,6 +165,7 @@ export default function GameRoom({ params }) {
         players.length === 2 &&
         !isRoomOwner && <p>Waiting for another player to start..</p>}
       {(gameStatus === GAME_STATUS.GAME_OVER ||
+        gameStatus === GAME_STATUS.TIME_UP ||
         (gameStatus === GAME_STATUS.STARTED && players.length === 2)) &&
         settingsData &&
         mazeMap && (
@@ -194,8 +198,9 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
         <p>You lost the game</p>
       )}
-      {gameStatus === GAME_STATUS.GAME_OVER && (
-        //Play again button - it should refresh page
+      {gameStatus === GAME_STATUS.TIME_UP && <p>Time's up! No Winner</p>}
+      {(gameStatus === GAME_STATUS.GAME_OVER ||
+        gameStatus === GAME_STATUS.TIME_UP) && (
         <button onClick={() => window.location.reload()}>Play Again</button>
       )}
       {gameStatus === GAME_STATUS.STARTED && timeRemaining !== null && (
