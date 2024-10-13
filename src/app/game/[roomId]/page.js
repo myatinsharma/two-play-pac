@@ -22,6 +22,7 @@ export default function GameRoom({ params }) {
   const [settingsData, setGameSettings] = useState(null);
   const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(null);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -55,6 +56,10 @@ export default function GameRoom({ params }) {
       } else {
         setIsRoomOwner(false);
         localStorage.removeItem("roomOwner");
+      }
+
+      if (data.settings && data.settings.timeLimit) {
+        setTimeRemaining(data.settings.timeLimit);
       }
     });
 
@@ -90,6 +95,10 @@ export default function GameRoom({ params }) {
       }
     });
 
+    socket.on("timeUpdate", ({ timeRemaining }) => {
+      setTimeRemaining(timeRemaining);
+    });
+
     return () => {
       socket.off("roomData");
       socket.off("roleChosen");
@@ -97,6 +106,7 @@ export default function GameRoom({ params }) {
       socket.off("roomFull");
       socket.off("settingsUpdate");
       socket.off("playerMove");
+      socket.off("timeUpdate");
       socket.disconnect();
     };
   }, [roomId]);
@@ -187,6 +197,11 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && (
         //Play again button - it should refresh page
         <button onClick={() => window.location.reload()}>Play Again</button>
+      )}
+      {gameStatus === GAME_STATUS.STARTED && timeRemaining !== null && (
+        <div className="time-remaining">
+          <p>Time Remaining: {timeRemaining} seconds</p>
+        </div>
       )}
     </div>
   );
