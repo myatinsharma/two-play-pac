@@ -4,7 +4,11 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
+import {
+  GAME_STATUS,
+  GAME_STATUS_DESCRIPTION,
+  PLAYER_ROLES,
+} from "../../constants";
 
 let socket;
 
@@ -23,6 +27,7 @@ export default function GameRoom({ params }) {
   const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
+  const [score, setScore] = useState(null);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -48,6 +53,7 @@ export default function GameRoom({ params }) {
       setPlayers(data.players);
       setPlayersPos(data.playersPosition);
       setRole(data.players.find((player) => player.id === socket.id).role);
+      setScoreboard(data.settings.totalRounds);
       setServerConnected(true);
 
       if (data.roomOwner === socket.id) {
@@ -86,17 +92,25 @@ export default function GameRoom({ params }) {
       setShowLoader(false);
     });
 
-    socket.on("playerMove", ({ playersPosition, mazeMap, winner }) => {
-      setMazeMap(mazeMap);
-      setPlayersPos(playersPosition);
-      if (winner === 0) {
-        setWinner(null);
-        setGameStatus(GAME_STATUS.TIME_UP);
-      } else if (winner === 1 || winner === 2) {
-        setWinner(winner);
-        setGameStatus(GAME_STATUS.GAME_OVER);
+    socket.on(
+      "playerMove",
+      ({ playersPosition, mazeMap, turnWinner, scores }) => {
+        console.log("turnWinner..", turnWinner);
+        console.log("scores..", scores);
+        console.log("playersPosition..", playersPosition);
+        console.log("mazeMap..", mazeMap);
+        setScore(scores);
+        setMazeMap(mazeMap);
+        setPlayersPos(playersPosition);
+        if (turnWinner === 0) {
+          //setWinner(null);
+          setGameStatus(GAME_STATUS.TURNS_TIME_UP);
+        } else if (turnWinner === 1 || turnWinner === 2) {
+          setWinner(turnWinner);
+          setGameStatus(GAME_STATUS.TURN_COMPLETED);
+        }
       }
-    });
+    );
 
     socket.on("timeUpdate", ({ timeRemaining }) => {
       setTimeRemaining(timeRemaining);
@@ -137,6 +151,49 @@ export default function GameRoom({ params }) {
 
   const handlePlayerMove = ({ row, col }) => {
     socket.emit("playerMove", { roomId, row, col });
+  };
+
+  const setScoreboard = (totalRounds) => {
+    const scoreboard = {};
+    for (let i = 1; i <= totalRounds; i++) {
+      scoreboard[i] = {
+        1: { [PLAYER_ROLES.CHASER]: 0, [PLAYER_ROLES.CHASEE]: 0 },
+        2: { [PLAYER_ROLES.CHASER]: 0, [PLAYER_ROLES.CHASEE]: 0 },
+      };
+    }
+
+    console.log("scoreboard", scoreboard);
+    setScore(scoreboard);
+  };
+
+  // Add this new function to render the scoreboard
+  const renderScoreboard = () => {
+    if (!score) return null;
+
+    return (
+      <table className="scoreboard">
+        <thead>
+          <tr>
+            <th>Round</th>
+            <th>Turn 1 - P1</th>
+            <th>Turn 1 - P2</th>
+            <th>Turn 2 - P1</th>
+            <th>Turn 2 - P2</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(score).map(([round, turns]) => (
+            <tr key={round}>
+              <td>{round}</td>
+              <td>{turns[1].player1 || "-"}</td>
+              <td>{turns[1].player2 || "-"}</td>
+              <td>{turns[2].player1 || "-"}</td>
+              <td>{turns[2].player2 || "-"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -208,6 +265,11 @@ export default function GameRoom({ params }) {
           <p>Time Remaining: {timeRemaining} seconds</p>
         </div>
       )}
+      {/* Replace the existing score div with this new scoreboard */}
+      <div className="scoreboard-container">
+        <h3>Scoreboard</h3>
+        {renderScoreboard()}
+      </div>
     </div>
   );
 }
