@@ -53,7 +53,10 @@ export default function GameRoom({ params }) {
       setPlayers(data.players);
       setPlayersPos(data.playersPosition);
       setRole(data.players.find((player) => player.id === socket.id).role);
-      setScoreboard(data.settings.totalRounds);
+      if (data.players.length === 2) {
+        console.log("setting scoreboard", data.players);
+        setScoreboard(data.settings.totalRounds, data.players);
+      }
       setServerConnected(true);
 
       if (data.roomOwner === socket.id) {
@@ -153,22 +156,20 @@ export default function GameRoom({ params }) {
     socket.emit("playerMove", { roomId, row, col });
   };
 
-  const setScoreboard = (totalRounds) => {
+  const setScoreboard = (totalRounds, players) => {
     const scoreboard = {};
     for (let i = 1; i <= totalRounds; i++) {
       scoreboard[i] = {
-        1: { [PLAYER_ROLES.CHASER]: 0, [PLAYER_ROLES.CHASEE]: 0 },
-        2: { [PLAYER_ROLES.CHASER]: 0, [PLAYER_ROLES.CHASEE]: 0 },
+        1: { [players[0].id]: 0, [players[1].id]: 0 },
+        2: { [players[0].id]: 0, [players[1].id]: 0 },
       };
     }
-
-    console.log("scoreboard", scoreboard);
     setScore(scoreboard);
   };
 
   // Add this new function to render the scoreboard
   const renderScoreboard = () => {
-    if (!score) return null;
+    if (!score || (players && players.length !== 2)) return null;
 
     return (
       <table className="scoreboard">
@@ -185,10 +186,10 @@ export default function GameRoom({ params }) {
           {Object.entries(score).map(([round, turns]) => (
             <tr key={round}>
               <td>{round}</td>
-              <td>{turns[1].player1 || "-"}</td>
-              <td>{turns[1].player2 || "-"}</td>
-              <td>{turns[2].player1 || "-"}</td>
-              <td>{turns[2].player2 || "-"}</td>
+              <td>{turns[1][players[0].id] || "-"}</td>
+              <td>{turns[1][players[1].id] || "-"}</td>
+              <td>{turns[2][players[0].id] || "-"}</td>
+              <td>{turns[2][players[1].id] || "-"}</td>
             </tr>
           ))}
         </tbody>
