@@ -14,17 +14,8 @@ function GameBoard({
 
   const movePlayer = useCallback(
     (direction) => {
-      const getInitialPosition = (role, axis) => {
-        if (playersPos && playersPos[role]) {
-          return playersPos[role][axis];
-        }
-        return role === PLAYER_ROLES.CHASER
-          ? mazeMap.startingPosition.chaser[axis]
-          : mazeMap.startingPosition.chasee[axis];
-      };
-
-      let newRow = getInitialPosition(role, "row");
-      let newCol = getInitialPosition(role, "col");
+      let newRow = playersPos[role].row;
+      let newCol = playersPos[role].col;
 
       // Update the position based on direction
       if (direction === "up") newRow--;
@@ -56,7 +47,6 @@ function GameBoard({
         timestamp - lastMoveTime >= moveInterval &&
         gameStatus === GAME_STATUS.STARTED
       ) {
-        console.log("gameStatus00", gameStatus);
         movePlayer(currentDirection);
         setLastMoveTime(timestamp);
       }
@@ -65,7 +55,6 @@ function GameBoard({
 
     const handleKeyDown = (event) => {
       if (gameStatus === GAME_STATUS.STARTED) {
-        console.log("gameStatus01", gameStatus);
         let direction;
         switch (event.key) {
           case "ArrowUp":
@@ -114,14 +103,12 @@ function GameBoard({
       gameStatus === GAME_STATUS.ROUND_COMPLETED ||
       gameStatus === GAME_STATUS.TURN_COMPLETED
     ) {
-      console.log("gameStatus02", gameStatus);
       setCurrentDirection(null);
     }
   }, [gameStatus]);
 
   const handleArrowClick = (direction) => {
     if (gameStatus === GAME_STATUS.STARTED) {
-      console.log("gameStatus03", gameStatus);
       setCurrentDirection(direction);
     }
   };
@@ -149,25 +136,13 @@ function GameBoard({
             let cellContent = null;
 
             if (
-              rowIndex ===
-                (playersPos && playersPos[PLAYER_ROLES.CHASER]
-                  ? playersPos[PLAYER_ROLES.CHASER].row
-                  : mazeMap.startingPosition.chaser.row) &&
-              colIndex ===
-                (playersPos && playersPos[PLAYER_ROLES.CHASER]
-                  ? playersPos[PLAYER_ROLES.CHASER].col
-                  : mazeMap.startingPosition.chaser.col)
+              rowIndex === playersPos[PLAYER_ROLES.CHASER].row &&
+              colIndex === playersPos[PLAYER_ROLES.CHASER].col
             ) {
               backgroundColor = "blue"; // Chaser
             } else if (
-              rowIndex ===
-                (playersPos && playersPos[PLAYER_ROLES.CHASEE]
-                  ? playersPos[PLAYER_ROLES.CHASEE].row
-                  : mazeMap.startingPosition.chasee.row) &&
-              colIndex ===
-                (playersPos && playersPos[PLAYER_ROLES.CHASEE]
-                  ? playersPos[PLAYER_ROLES.CHASEE].col
-                  : mazeMap.startingPosition.chasee.col)
+              rowIndex === playersPos[PLAYER_ROLES.CHASEE].row &&
+              colIndex === playersPos[PLAYER_ROLES.CHASEE].col
             ) {
               backgroundColor = "red"; // Chasee
             } else if (cell === 1) {

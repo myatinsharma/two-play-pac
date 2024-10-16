@@ -54,7 +54,6 @@ export default function GameRoom({ params }) {
       setPlayersPos(data.playersPosition);
       setRole(data.players.find((player) => player.id === socket.id).role);
       if (data.players.length === 2) {
-        console.log("setting scoreboard", data.players);
         setScoreboard(data.settings.totalRounds, data.players);
       }
       setServerConnected(true);
