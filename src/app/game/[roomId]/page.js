@@ -28,6 +28,8 @@ export default function GameRoom({ params }) {
   const [isRoomOwner, setIsRoomOwner] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [score, setScore] = useState(null);
+  const [currentRound, setCurrentRound] = useState(null);
+  const [currentTurn, setCurrentTurn] = useState(null);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -46,17 +48,21 @@ export default function GameRoom({ params }) {
       if (data.status === GAME_STATUS.PLAYER_DISCONNECTED) {
         setPlayerDisconnected(true);
       }
+      setServerConnected(true);
       setShowLoader(false);
       setGameSettings(data.settings);
       setGameStatus(data.status);
       setMazeMap(data.mazeMap);
       setPlayers(data.players);
       setPlayersPos(data.playersPosition);
+      setCurrentRound(data.currentRound);
+      setCurrentTurn(data.currentTurn);
       setRole(data.players.find((player) => player.id === socket.id).role);
       if (data.players.length === 2) {
-        setScoreboard(data.settings.totalRounds, data.players);
+        if (data.currentRound === 1 && data.currentTurn === 1) {
+          setScoreboard(data.settings.totalRounds, data.players);
+        }
       }
-      setServerConnected(true);
 
       if (data.roomOwner === socket.id) {
         setIsRoomOwner(true);
@@ -72,14 +78,16 @@ export default function GameRoom({ params }) {
     });
 
     socket.on("roleUpdate", ({ players }) => {
-      console.log("roleUpdate", players);
       setPlayers(players);
       setRole(players.find((player) => player.id === socket.id).role);
     });
 
     socket.on("startGame", ({ status }) => {
-      if (status === GAME_STATUS.STARTED) {
-        setGameStatus(GAME_STATUS.STARTED);
+      if (
+        status === GAME_STATUS.STARTED ||
+        status === GAME_STATUS.TURN_STARTED
+      ) {
+        setGameStatus(status);
       }
     });
 
@@ -88,16 +96,17 @@ export default function GameRoom({ params }) {
       socket.disconnect();
     });
 
-    socket.on("settingsUpdate", ({ settings, mazeMap }) => {
+    socket.on("settingsUpdate", ({ settings, mazeMap, players }) => {
       setGameSettings(settings);
       setMazeMap(mazeMap);
-      setShowLoader(false);
+      if (players.length === 2 && settings.totalRounds) {
+        setScoreboard(settings.totalRounds, players);
+      }
     });
 
     socket.on(
       "playerMove",
-      ({ playersPosition, mazeMap, turnWinner, scores, gameStatus }) => {
-        console.log("turnWinner..", turnWinner);
+      ({ playersPosition, mazeMap, scores, gameStatus }) => {
         console.log("scores..", scores);
         console.log("playersPosition..", playersPosition);
         console.log("mazeMap..", mazeMap);
@@ -105,7 +114,6 @@ export default function GameRoom({ params }) {
         setScore(scores);
         setMazeMap(mazeMap);
         setPlayersPos(playersPosition);
-        //setWinner(turnWinner);
         setGameStatus(gameStatus);
       }
     );
@@ -127,8 +135,13 @@ export default function GameRoom({ params }) {
   }, [roomId]);
 
   const handleSettingsChange = (event) => {
-    if (gameStatus === GAME_STATUS.STARTED) return;
-    setShowLoader(true);
+    if (
+      gameStatus === GAME_STATUS.STARTED ||
+      gameStatus === GAME_STATUS.TURN_STARTED
+    ) {
+      return;
+    }
+
     const { name, value } = event.target;
     if (name === "role") {
       socket.emit("roleChosen", { roomId, role: parseInt(value) });
@@ -202,6 +215,8 @@ export default function GameRoom({ params }) {
       <p>Server Connected: {serverConnected ? "Yes" : "No"}</p>
       <p>Players: {players.length}</p>
       <p>Status: {GAME_STATUS_DESCRIPTION[gameStatus]}</p>
+      <p>Current Round: {currentRound}</p>
+      <p>Current Turn: {currentTurn}</p>
       {serverConnected && (
         <GameSettings
           isRoomOwner={isRoomOwner}
@@ -225,17 +240,19 @@ export default function GameRoom({ params }) {
         gameStatus === GAME_STATUS.TURNS_TIME_UP ||
         gameStatus === GAME_STATUS.ROUND_COMPLETED ||
         gameStatus === GAME_STATUS.TURN_COMPLETED ||
-        (gameStatus === GAME_STATUS.STARTED && players.length === 2)) &&
-        settingsData &&
-        mazeMap && (
-          <GameBoard
-            mazeMap={mazeMap}
-            playersPos={playersPos}
-            role={role}
-            handlePlayerMove={handlePlayerMove}
-            gameStatus={gameStatus}
-          />
-        )}
+        ((gameStatus === GAME_STATUS.STARTED ||
+          gameStatus === GAME_STATUS.TURN_STARTED) &&
+          players.length === 2 &&
+          settingsData &&
+          mazeMap)) && (
+        <GameBoard
+          mazeMap={mazeMap}
+          playersPos={playersPos}
+          role={role}
+          handlePlayerMove={handlePlayerMove}
+          gameStatus={gameStatus}
+        />
+      )}
       {showLoader && (
         <div className="loader-container">
           <div className="loader"></div>
@@ -267,11 +284,13 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && (
         <button onClick={() => window.location.reload()}>Play Again</button>
       )}
-      {gameStatus === GAME_STATUS.STARTED && timeRemaining !== null && (
-        <div className="time-remaining">
-          <p>Time Remaining: {timeRemaining} seconds</p>
-        </div>
-      )}
+      {(gameStatus === GAME_STATUS.STARTED ||
+        gameStatus === GAME_STATUS.TURN_STARTED) &&
+        timeRemaining !== null && (
+          <div className="time-remaining">
+            <p>Time Remaining: {timeRemaining} seconds</p>
+          </div>
+        )}
       <div className="scoreboard-container">
         <h3>Scoreboard</h3>
         {renderScoreboard()}

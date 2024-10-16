@@ -5,8 +5,9 @@ const GAME_STATUS = Object.freeze({
   GAME_OVER: 3,
   PLAYER_DISCONNECTED: 4,
   TURNS_TIME_UP: 5,
-  TURN_COMPLETED: 6,
-  ROUND_COMPLETED: 7,
+  TURN_STARTED: 6,
+  TURN_COMPLETED: 7,
+  ROUND_COMPLETED: 8,
 });
 
 const GAME_STATUS_DESCRIPTION = Object.freeze({
@@ -15,7 +16,9 @@ const GAME_STATUS_DESCRIPTION = Object.freeze({
   3: "Game Over",
   4: "Player Disconnected",
   5: "Turns Time Up",
-  6: "Turn Completed",
+  6: "Turn Started",
+  7: "Turn Completed",
+  8: "Round Completed",
 });
 
 export { GAME_STATUS, GAME_STATUS_DESCRIPTION, PLAYER_ROLES };

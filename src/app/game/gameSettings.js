@@ -27,7 +27,11 @@ export default function GameSettings({
           <select
             name="timeLimit"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            disabled={
+              !isRoomOwner ||
+              gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED
+            }
             value={settingsData ? settingsData.timeLimit : ""}
           >
             {settingOptionsData.timeLimits.map((timeLimit) => (
@@ -43,7 +47,11 @@ export default function GameSettings({
           <select
             name="smoreCount"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            disabled={
+              !isRoomOwner ||
+              gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED
+            }
             value={settingsData ? settingsData.smoreCount : ""}
           >
             {settingOptionsData.smoreCounts.map((smoreCount) => (
@@ -59,7 +67,11 @@ export default function GameSettings({
           <select
             name="totalRounds"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            disabled={
+              !isRoomOwner ||
+              gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED
+            }
             value={settingsData ? settingsData.totalRounds : ""}
           >
             {settingOptionsData.totalRounds.map((totalRound) => (
@@ -75,7 +87,11 @@ export default function GameSettings({
           <select
             name="maze"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            disabled={
+              !isRoomOwner ||
+              gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED
+            }
             value={settingsData ? settingsData.maze : ""}
           >
             {settingOptionsData.maze.map((maze) => (
@@ -91,7 +107,11 @@ export default function GameSettings({
           <select
             name="role"
             onChange={handleSettingsChange}
-            disabled={!isRoomOwner || gameStatus === GAME_STATUS.STARTED}
+            disabled={
+              !isRoomOwner ||
+              gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED
+            }
             value={role}
           >
             {settingOptionsData.roles.map((role) => (
