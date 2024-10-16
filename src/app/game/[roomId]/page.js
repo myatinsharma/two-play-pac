@@ -97,21 +97,17 @@ export default function GameRoom({ params }) {
 
     socket.on(
       "playerMove",
-      ({ playersPosition, mazeMap, turnWinner, scores }) => {
+      ({ playersPosition, mazeMap, turnWinner, scores, gameStatus }) => {
         console.log("turnWinner..", turnWinner);
         console.log("scores..", scores);
         console.log("playersPosition..", playersPosition);
         console.log("mazeMap..", mazeMap);
+        console.log("gameStatus..", gameStatus);
         setScore(scores);
         setMazeMap(mazeMap);
         setPlayersPos(playersPosition);
-        if (turnWinner === 0) {
-          //setWinner(null);
-          setGameStatus(GAME_STATUS.TURNS_TIME_UP);
-        } else if (turnWinner === 1 || turnWinner === 2) {
-          setWinner(turnWinner);
-          setGameStatus(GAME_STATUS.TURN_COMPLETED);
-        }
+        //setWinner(turnWinner);
+        setGameStatus(gameStatus);
       }
     );
 
@@ -165,6 +161,10 @@ export default function GameRoom({ params }) {
       };
     }
     setScore(scoreboard);
+  };
+
+  const handleNextTurn = () => {
+    socket.emit("nextTurn", { roomId });
   };
 
   // Add this new function to render the scoreboard
@@ -223,7 +223,9 @@ export default function GameRoom({ params }) {
         players.length === 2 &&
         !isRoomOwner && <p>Waiting for another player to start..</p>}
       {(gameStatus === GAME_STATUS.GAME_OVER ||
-        gameStatus === GAME_STATUS.TIME_UP ||
+        gameStatus === GAME_STATUS.TURNS_TIME_UP ||
+        gameStatus === GAME_STATUS.ROUND_COMPLETED ||
+        gameStatus === GAME_STATUS.TURN_COMPLETED ||
         (gameStatus === GAME_STATUS.STARTED && players.length === 2)) &&
         settingsData &&
         mazeMap && (
@@ -238,6 +240,12 @@ export default function GameRoom({ params }) {
       {showLoader && (
         <div className="loader-container">
           <div className="loader"></div>
+        </div>
+      )}
+      {(gameStatus === GAME_STATUS.TURN_COMPLETED ||
+        gameStatus === GAME_STATUS.ROUND_COMPLETED) && (
+        <div className="turn-completed-container">
+          <button onClick={handleNextTurn}>Next Turn</button>
         </div>
       )}
       {playerDisconnected && players.length === 1 && (
@@ -256,9 +264,8 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
         <p>You lost the game</p>
       )}
-      {gameStatus === GAME_STATUS.TIME_UP && <p>Time's up! No Winner</p>}
-      {(gameStatus === GAME_STATUS.GAME_OVER ||
-        gameStatus === GAME_STATUS.TIME_UP) && (
+      {gameStatus === GAME_STATUS.TURNS_TIME_UP && <p>Time's up! No Winner</p>}
+      {gameStatus === GAME_STATUS.GAME_OVER && (
         <button onClick={() => window.location.reload()}>Play Again</button>
       )}
       {gameStatus === GAME_STATUS.STARTED && timeRemaining !== null && (
@@ -266,7 +273,6 @@ export default function GameRoom({ params }) {
           <p>Time Remaining: {timeRemaining} seconds</p>
         </div>
       )}
-      {/* Replace the existing score div with this new scoreboard */}
       <div className="scoreboard-container">
         <h3>Scoreboard</h3>
         {renderScoreboard()}

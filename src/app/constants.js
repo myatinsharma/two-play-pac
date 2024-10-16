@@ -6,6 +6,7 @@ const GAME_STATUS = Object.freeze({
   PLAYER_DISCONNECTED: 4,
   TURNS_TIME_UP: 5,
   TURN_COMPLETED: 6,
+  ROUND_COMPLETED: 7,
 });
 
 const GAME_STATUS_DESCRIPTION = Object.freeze({

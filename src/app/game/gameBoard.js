@@ -54,8 +54,9 @@ function GameBoard({
       if (
         currentDirection &&
         timestamp - lastMoveTime >= moveInterval &&
-        gameStatus !== GAME_STATUS.GAME_OVER
+        gameStatus === GAME_STATUS.STARTED
       ) {
+        console.log("gameStatus00", gameStatus);
         movePlayer(currentDirection);
         setLastMoveTime(timestamp);
       }
@@ -63,29 +64,28 @@ function GameBoard({
     };
 
     const handleKeyDown = (event) => {
-      if (gameStatus === GAME_STATUS.GAME_OVER) {
-        return; // Ignore key presses when the game is over
-      }
+      if (gameStatus === GAME_STATUS.STARTED) {
+        console.log("gameStatus01", gameStatus);
+        let direction;
+        switch (event.key) {
+          case "ArrowUp":
+            direction = "up";
+            break;
+          case "ArrowDown":
+            direction = "down";
+            break;
+          case "ArrowLeft":
+            direction = "left";
+            break;
+          case "ArrowRight":
+            direction = "right";
+            break;
+          default:
+            return; // If it's not an arrow key, do nothing
+        }
 
-      let direction;
-      switch (event.key) {
-        case "ArrowUp":
-          direction = "up";
-          break;
-        case "ArrowDown":
-          direction = "down";
-          break;
-        case "ArrowLeft":
-          direction = "left";
-          break;
-        case "ArrowRight":
-          direction = "right";
-          break;
-        default:
-          return; // If it's not an arrow key, do nothing
+        setCurrentDirection(direction);
       }
-
-      setCurrentDirection(direction);
     };
 
     const handleKeyUp = (event) => {
@@ -109,13 +109,19 @@ function GameBoard({
   }, [movePlayer, currentDirection, lastMoveTime, gameStatus]);
 
   useEffect(() => {
-    if (gameStatus === GAME_STATUS.GAME_OVER) {
+    if (
+      gameStatus === GAME_STATUS.GAME_OVER ||
+      gameStatus === GAME_STATUS.ROUND_COMPLETED ||
+      gameStatus === GAME_STATUS.TURN_COMPLETED
+    ) {
+      console.log("gameStatus02", gameStatus);
       setCurrentDirection(null);
     }
   }, [gameStatus]);
 
   const handleArrowClick = (direction) => {
-    if (gameStatus !== GAME_STATUS.GAME_OVER) {
+    if (gameStatus === GAME_STATUS.STARTED) {
+      console.log("gameStatus03", gameStatus);
       setCurrentDirection(direction);
     }
   };
