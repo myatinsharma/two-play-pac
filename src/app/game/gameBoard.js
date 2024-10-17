@@ -12,6 +12,10 @@ function GameBoard({
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
 
+  console.log("playersPos909090", playersPos);
+  console.log("role909090", role);
+  console.log("gameStatus909090", gameStatus);
+
   const movePlayer = useCallback(
     (direction) => {
       let newRow = playersPos[role].row;
