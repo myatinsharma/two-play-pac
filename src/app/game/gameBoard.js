@@ -104,7 +104,6 @@ function GameBoard({
   useEffect(() => {
     if (
       gameStatus === GAME_STATUS.GAME_OVER ||
-      gameStatus === GAME_STATUS.ROUND_COMPLETED ||
       gameStatus === GAME_STATUS.TURN_COMPLETED
     ) {
       setCurrentDirection(null);

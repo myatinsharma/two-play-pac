@@ -238,29 +238,26 @@ export default function GameRoom({ params }) {
         players.length === 2 &&
         !isRoomOwner && <p>Waiting for another player to start..</p>}
       {(gameStatus === GAME_STATUS.GAME_OVER ||
-        gameStatus === GAME_STATUS.TURNS_TIME_UP ||
-        gameStatus === GAME_STATUS.ROUND_COMPLETED ||
         gameStatus === GAME_STATUS.TURN_COMPLETED ||
-        ((gameStatus === GAME_STATUS.STARTED ||
-          gameStatus === GAME_STATUS.TURN_STARTED) &&
-          players.length === 2 &&
-          settingsData &&
-          mazeMap)) && (
-        <GameBoard
-          mazeMap={mazeMap}
-          playersPos={playersPos}
-          role={role}
-          handlePlayerMove={handlePlayerMove}
-          gameStatus={gameStatus}
-        />
-      )}
+        gameStatus === GAME_STATUS.STARTED ||
+        gameStatus === GAME_STATUS.TURN_STARTED) &&
+        players.length === 2 &&
+        settingsData &&
+        mazeMap && (
+          <GameBoard
+            mazeMap={mazeMap}
+            playersPos={playersPos}
+            role={role}
+            handlePlayerMove={handlePlayerMove}
+            gameStatus={gameStatus}
+          />
+        )}
       {showLoader && (
         <div className="loader-container">
           <div className="loader"></div>
         </div>
       )}
-      {(gameStatus === GAME_STATUS.TURN_COMPLETED ||
-        gameStatus === GAME_STATUS.ROUND_COMPLETED) && (
+      {gameStatus === GAME_STATUS.TURN_COMPLETED && (
         <div className="turn-completed-container">
           <button onClick={handleNextTurn}>Next Turn</button>
         </div>
@@ -281,7 +278,6 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
         <p>You lost the game</p>
       )}
-      {gameStatus === GAME_STATUS.TURNS_TIME_UP && <p>Time's up! No Winner</p>}
       {gameStatus === GAME_STATUS.GAME_OVER && (
         <button onClick={() => window.location.reload()}>Play Again</button>
       )}

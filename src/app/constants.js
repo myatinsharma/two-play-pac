@@ -4,10 +4,8 @@ const GAME_STATUS = Object.freeze({
   STARTED: 2,
   GAME_OVER: 3,
   PLAYER_DISCONNECTED: 4,
-  TURNS_TIME_UP: 5,
   TURN_STARTED: 6,
   TURN_COMPLETED: 7,
-  ROUND_COMPLETED: 8,
 });
 
 const GAME_STATUS_DESCRIPTION = Object.freeze({
