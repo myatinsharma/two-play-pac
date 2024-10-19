@@ -249,6 +249,10 @@ const arrowButtonStyle = {
   border: "1px solid #ccc",
   borderRadius: "5px",
   cursor: "pointer",
+  userSelect: "none",
+  WebkitUserSelect: "none",
+  MozUserSelect: "none",
+  msUserSelect: "none",
 };
 
 const toggleButtonStyle = {

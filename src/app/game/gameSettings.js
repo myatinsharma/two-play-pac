@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GAME_STATUS } from "../constants";
+import { GAME_STATUS, PLAYER_ROLES } from "../constants";
 
 export default function GameSettings({
   isRoomOwner,
@@ -96,7 +96,7 @@ export default function GameSettings({
           >
             {settingOptionsData.roles.map((role) => (
               <option key={role.value} value={role.value}>
-                {role.label}
+                {role.label} {role.value === PLAYER_ROLES.CHASER ? "🔵" : "🔴"}
               </option>
             ))}
           </select>
