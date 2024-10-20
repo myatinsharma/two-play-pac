@@ -125,58 +125,41 @@ function GameBoard({
   };
 
   return (
-    <div>
-      <h3>Game Board</h3>
+    <div className="mt-8">
+      <h3 className="text-2xl font-bold mb-4">Game Board</h3>
       <div
+        className="grid gap-px bg-gray-200"
         style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${mazeMap.maze[0].length}, 20px)`,
+          gridTemplateColumns: `repeat(${mazeMap.maze[0].length}, minmax(0, 1fr))`,
         }}
       >
         {mazeMap.maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
-            let backgroundColor = "white";
+            let backgroundColor = "bg-white";
             let cellContent = null;
 
             if (
               rowIndex === playersPos[PLAYER_ROLES.CHASER].row &&
               colIndex === playersPos[PLAYER_ROLES.CHASER].col
             ) {
-              backgroundColor = "blue"; // Chaser
+              backgroundColor = "bg-blue-500";
             } else if (
               rowIndex === playersPos[PLAYER_ROLES.CHASEE].row &&
               colIndex === playersPos[PLAYER_ROLES.CHASEE].col
             ) {
-              backgroundColor = "red"; // Chasee
+              backgroundColor = "bg-red-500";
             } else if (cell === 1) {
-              backgroundColor = "black"; // Wall
+              backgroundColor = "bg-gray-800";
             } else if (cell === 2) {
-              backgroundColor = "white"; // Keep cell white
               cellContent = (
-                <div
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: "50%",
-                    backgroundColor: "#4dc513", // Always yellow, no blinking
-                    margin: "4px auto",
-                  }}
-                />
-              ); // S'more (static yellow dot)
+                <div className="w-3 h-3 rounded-full bg-yellow-400 m-auto" />
+              );
             }
 
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                style={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor,
-                  border: "1px solid gray",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+                className={`w-6 h-6 ${backgroundColor} flex items-center justify-center`}
               >
                 {cellContent}
               </div>
@@ -184,34 +167,30 @@ function GameBoard({
           })
         )}
       </div>
-      <button onClick={toggleArrows} style={toggleButtonStyle}>
+      <button
+        onClick={toggleArrows}
+        className="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded"
+      >
         {showArrows ? "Hide" : "Show"} Arrows
       </button>
       {showArrows && (
-        <div
-          style={{
-            marginTop: "20px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
+        <div className="mt-4 flex flex-col items-center">
           <button
             onTouchStart={() => handleArrowClick("up")}
             onTouchEnd={handleArrowRelease}
             onMouseDown={() => handleArrowClick("up")}
             onMouseUp={handleArrowRelease}
-            style={arrowButtonStyle}
+            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mb-2"
           >
             ▲
           </button>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div className="flex justify-center">
             <button
               onTouchStart={() => handleArrowClick("left")}
               onTouchEnd={handleArrowRelease}
               onMouseDown={() => handleArrowClick("left")}
               onMouseUp={handleArrowRelease}
-              style={arrowButtonStyle}
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mr-2"
             >
               ◀
             </button>
@@ -220,7 +199,7 @@ function GameBoard({
               onTouchEnd={handleArrowRelease}
               onMouseDown={() => handleArrowClick("down")}
               onMouseUp={handleArrowRelease}
-              style={arrowButtonStyle}
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mx-2"
             >
               ▼
             </button>
@@ -229,7 +208,7 @@ function GameBoard({
               onTouchEnd={handleArrowRelease}
               onMouseDown={() => handleArrowClick("right")}
               onMouseUp={handleArrowRelease}
-              style={arrowButtonStyle}
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full ml-2"
             >
               ▶
             </button>

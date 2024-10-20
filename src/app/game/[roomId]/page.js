@@ -210,86 +210,112 @@ export default function GameRoom({ params }) {
   };
 
   return (
-    <div>
-      <h2>Room: {roomId}</h2>
-      <p>Server Connected: {serverConnected ? "Yes" : "No"}</p>
-      <p>Players: {players.length}</p>
-      <p>Status: {GAME_STATUS_DESCRIPTION[gameStatus]}</p>
-      <p>Current Round: {currentRound}</p>
-      <p>Current Turn: {currentTurn}</p>
-      {serverConnected && (
-        <GameSettings
-          isRoomOwner={isRoomOwner}
-          settingsData={settingsData}
-          gameStatus={gameStatus}
-          role={role}
-          handleSettingsChange={handleSettingsChange}
-        ></GameSettings>
-      )}
-      {isRoomOwner &&
-        (gameStatus === GAME_STATUS.NOT_STARTED ||
-          gameStatus === GAME_STATUS.TURN_STARTED) &&
-        settingsData &&
-        players.length === 2 && <button onClick={startGame}>Start Game</button>}
-      {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
-        <p>Waiting for another user..</p>
-      )}
-      {gameStatus === GAME_STATUS.NOT_STARTED &&
-        players.length === 2 &&
-        !isRoomOwner && <p>Waiting for another player to start..</p>}
-      {(gameStatus === GAME_STATUS.GAME_OVER ||
-        gameStatus === GAME_STATUS.TURN_COMPLETED ||
-        gameStatus === GAME_STATUS.STARTED ||
-        gameStatus === GAME_STATUS.TURN_STARTED) &&
-        players.length === 2 &&
-        settingsData &&
-        mazeMap && (
-          <GameBoard
-            mazeMap={mazeMap}
-            playersPos={playersPos}
-            role={role}
-            handlePlayerMove={handlePlayerMove}
-            gameStatus={gameStatus}
-          />
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-4">Room: {roomId}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <p className="mb-2">Server Connected: <span className={`font-semibold ${serverConnected ? 'text-green-600' : 'text-red-600'}`}>{serverConnected ? 'Yes' : 'No'}</span></p>
+          <p className="mb-2">Players: <span className="font-semibold">{players.length}</span></p>
+          <p className="mb-2">Status: <span className="font-semibold">{GAME_STATUS_DESCRIPTION[gameStatus]}</span></p>
+          <p className="mb-2">Current Round: <span className="font-semibold">{currentRound}</span></p>
+          <p className="mb-2">Current Turn: <span className="font-semibold">{currentTurn}</span></p>
+        </div>
+        <div className="bg-white shadow-md rounded-lg p-6">
+          {serverConnected && (
+            <GameSettings
+              isRoomOwner={isRoomOwner}
+              settingsData={settingsData}
+              gameStatus={gameStatus}
+              role={role}
+              handleSettingsChange={handleSettingsChange}
+            />
+          )}
+        </div>
+      </div>
+      <div className="mt-8">
+        {isRoomOwner &&
+          (gameStatus === GAME_STATUS.NOT_STARTED ||
+            gameStatus === GAME_STATUS.TURN_STARTED) &&
+          settingsData &&
+          players.length === 2 && (
+            <button
+              onClick={startGame}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Start Game
+            </button>
+          )}
+        {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
+          <p className="text-lg font-semibold text-gray-600">Waiting for another user...</p>
         )}
+        {gameStatus === GAME_STATUS.NOT_STARTED &&
+          players.length === 2 &&
+          !isRoomOwner && (
+            <p className="text-lg font-semibold text-gray-600">Waiting for another player to start...</p>
+          )}
+      </div>
+      <div className="mt-8">
+        {(gameStatus === GAME_STATUS.GAME_OVER ||
+          gameStatus === GAME_STATUS.TURN_COMPLETED ||
+          gameStatus === GAME_STATUS.STARTED ||
+          gameStatus === GAME_STATUS.TURN_STARTED) &&
+          players.length === 2 &&
+          settingsData &&
+          mazeMap && (
+            <GameBoard
+              mazeMap={mazeMap}
+              playersPos={playersPos}
+              role={role}
+              handlePlayerMove={handlePlayerMove}
+              gameStatus={gameStatus}
+            />
+          )}
+      </div>
       {showLoader && (
-        <div className="loader-container">
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="loader"></div>
         </div>
       )}
       {gameStatus === GAME_STATUS.TURN_COMPLETED && (
-        <div className="turn-completed-container">
-          <button onClick={handleNextTurn}>Next Turn</button>
+        <div className="mt-4">
+          <button
+            onClick={handleNextTurn}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Next Turn
+          </button>
         </div>
       )}
       {playerDisconnected && players.length === 1 && (
-        <div className="player-disconnected-container">
-          <p>Player Disconnected</p>
+        <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <p className="font-bold">Player Disconnected</p>
         </div>
       )}
       {gameStatus === GAME_STATUS.GAME_OVER && (
-        <div className="game-over-container">
-          <p>Game Over</p>
+        <div className="mt-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+          <p className="font-bold">Game Over</p>
+          {winner === role ? (
+            <p className="mt-2 text-green-600 font-semibold">You won the game!</p>
+          ) : (
+            <p className="mt-2 text-red-600 font-semibold">You lost the game.</p>
+          )}
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Play Again
+          </button>
         </div>
-      )}
-      {gameStatus === GAME_STATUS.GAME_OVER && winner === role && (
-        <p>You won the game</p>
-      )}
-      {gameStatus === GAME_STATUS.GAME_OVER && winner !== role && (
-        <p>You lost the game</p>
-      )}
-      {gameStatus === GAME_STATUS.GAME_OVER && (
-        <button onClick={() => window.location.reload()}>Play Again</button>
       )}
       {(gameStatus === GAME_STATUS.STARTED ||
         gameStatus === GAME_STATUS.TURN_STARTED) &&
         timeRemaining !== null && (
-          <div className="time-remaining">
-            <p>Time Remaining: {timeRemaining} seconds</p>
+          <div className="mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+            <p className="font-bold">Time Remaining: {timeRemaining} seconds</p>
           </div>
         )}
-      <div className="scoreboard-container">
-        <h3>Scoreboard</h3>
+      <div className="mt-8">
+        <h3 className="text-2xl font-bold mb-4">Scoreboard</h3>
         {renderScoreboard()}
       </div>
     </div>

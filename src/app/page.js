@@ -25,19 +25,34 @@ export default function HomePage() {
   };
 
   return (
-    <div>
-      <h1>Welcome to the Maze Chase Game!</h1>
-      {savedRoom ? (
-        <div>
-          <p>Saved Room ID: {savedRoom}</p>
-          <button onClick={() => router.push(`/game/${savedRoom}`)}>
-            Rejoin Room
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8 text-center">Welcome to the Maze Chase Game!</h1>
+      <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+        {savedRoom ? (
+          <div className="space-y-4">
+            <p className="text-lg">Saved Room ID: <span className="font-semibold">{savedRoom}</span></p>
+            <button
+              onClick={() => router.push(`/game/${savedRoom}`)}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Rejoin Room
+            </button>
+            <button
+              onClick={handleRemoveRoom}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Remove Room
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleCreateRoom}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Create New Room
           </button>
-          <button onClick={handleRemoveRoom}>Remove Room</button>
-        </div>
-      ) : (
-        <button onClick={handleCreateRoom}>Create New Room</button>
-      )}
+        )}
+      </div>
     </div>
   );
 }
