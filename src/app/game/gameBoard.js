@@ -127,49 +127,47 @@ function GameBoard({
   return (
     <div className="mt-8">
       <h3 className="text-2xl font-bold mb-4">Game Board</h3>
-      <div
-        className="grid gap-0 border border-gray-300"
-        style={{
-          gridTemplateColumns: `repeat(${mazeMap.maze[0].length}, minmax(0, 1fr))`,
-        }}
-      >
-        {mazeMap.maze.flatMap((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            let cellClass = "w-6 h-6 flex items-center justify-center";
-            let cellContent = null;
+      <div className="flex justify-center">
+        <div
+          className="grid gap-0 border border-gray-300"
+          style={{
+            gridTemplateColumns: `repeat(${mazeMap.maze[0].length}, minmax(0, 1fr))`,
+            width: `${mazeMap.maze[0].length * 20}px`, // Adjust this value to change the overall maze size
+          }}
+        >
+          {mazeMap.maze.flatMap((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              let cellClass = "w-5 h-5 flex items-center justify-center"; // Reduced cell size
+              let cellContent = null;
 
-            if (
-              rowIndex === playersPos[PLAYER_ROLES.CHASER].row &&
-              colIndex === playersPos[PLAYER_ROLES.CHASER].col
-            ) {
-              cellClass += " bg-blue-500";
-            } else if (
-              rowIndex === playersPos[PLAYER_ROLES.CHASEE].row &&
-              colIndex === playersPos[PLAYER_ROLES.CHASEE].col
-            ) {
-              cellClass += " bg-red-500";
-            } else if (cell === 1) {
-              cellClass += " bg-gray-800";
-            } else if (cell === 2) {
-              cellContent = (
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-              );
-            } else {
-              cellClass += " bg-white";
-            }
+              if (
+                rowIndex === playersPos[PLAYER_ROLES.CHASER].row &&
+                colIndex === playersPos[PLAYER_ROLES.CHASER].col
+              ) {
+                cellClass += " bg-blue-500";
+              } else if (
+                rowIndex === playersPos[PLAYER_ROLES.CHASEE].row &&
+                colIndex === playersPos[PLAYER_ROLES.CHASEE].col
+              ) {
+                cellClass += " bg-red-500";
+              } else if (cell === 1) {
+                cellClass += " bg-gray-800";
+              } else if (cell === 2) {
+                cellContent = (
+                  <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                );
+              } else {
+                cellClass += " bg-white";
+              }
 
-            return (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`maze-cell ${cellClass}`}
-              >
-                <div className="maze-cell-content">
+              return (
+                <div key={`${rowIndex}-${colIndex}`} className={cellClass}>
                   {cellContent}
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
       <button
         onClick={toggleArrows}
