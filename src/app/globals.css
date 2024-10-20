@@ -121,3 +121,20 @@ body.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
 }
+
+.maze-cell {
+  width: 100%;
+  padding-bottom: 100%; /* Creates a square aspect ratio */
+  position: relative;
+}
+
+.maze-cell-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

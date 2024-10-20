@@ -128,40 +128,44 @@ function GameBoard({
     <div className="mt-8">
       <h3 className="text-2xl font-bold mb-4">Game Board</h3>
       <div
-        className="grid gap-px bg-gray-200"
+        className="grid gap-0 border border-gray-300"
         style={{
           gridTemplateColumns: `repeat(${mazeMap.maze[0].length}, minmax(0, 1fr))`,
         }}
       >
         {mazeMap.maze.flatMap((row, rowIndex) =>
           row.map((cell, colIndex) => {
-            let backgroundColor = "bg-white";
+            let cellClass = "w-6 h-6 flex items-center justify-center";
             let cellContent = null;
 
             if (
               rowIndex === playersPos[PLAYER_ROLES.CHASER].row &&
               colIndex === playersPos[PLAYER_ROLES.CHASER].col
             ) {
-              backgroundColor = "bg-blue-500";
+              cellClass += " bg-blue-500";
             } else if (
               rowIndex === playersPos[PLAYER_ROLES.CHASEE].row &&
               colIndex === playersPos[PLAYER_ROLES.CHASEE].col
             ) {
-              backgroundColor = "bg-red-500";
+              cellClass += " bg-red-500";
             } else if (cell === 1) {
-              backgroundColor = "bg-gray-800";
+              cellClass += " bg-gray-800";
             } else if (cell === 2) {
               cellContent = (
-                <div className="w-3 h-3 rounded-full bg-yellow-400 m-auto" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400" />
               );
+            } else {
+              cellClass += " bg-white";
             }
 
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`w-6 h-6 ${backgroundColor} flex items-center justify-center`}
+                className={`maze-cell ${cellClass}`}
               >
-                {cellContent}
+                <div className="maze-cell-content">
+                  {cellContent}
+                </div>
               </div>
             );
           })
