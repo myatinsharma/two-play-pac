@@ -9,6 +9,7 @@ import {
   GAME_STATUS_DESCRIPTION,
   PLAYER_ROLES,
 } from "../../constants";
+import * as msgpack from "msgpack-lite";
 
 let socket;
 
@@ -104,19 +105,18 @@ export default function GameRoom({ params }) {
       }
     });
 
-    socket.on(
-      "playerMove",
-      ({ playersPosition, mazeMap, scores, gameStatus }) => {
-        console.log("scores..", scores);
-        console.log("playersPosition..", playersPosition);
-        console.log("mazeMap..", mazeMap);
-        console.log("gameStatus..", gameStatus);
-        setScore(scores);
-        setMazeMap(mazeMap);
-        setPlayersPos(playersPosition);
-        setGameStatus(gameStatus);
-      }
-    );
+    socket.on("playerMove", (encodedData) => {
+      const { playersPosition, mazeMap, scores, gameStatus } =
+        msgpack.decode(encodedData);
+      console.log("scores..", scores);
+      console.log("playersPosition..", playersPosition);
+      console.log("mazeMap..", mazeMap);
+      console.log("gameStatus..", gameStatus);
+      setScore(scores);
+      setMazeMap(mazeMap);
+      setPlayersPos(playersPosition);
+      setGameStatus(gameStatus);
+    });
 
     socket.on("timeUpdate", ({ timeRemaining }) => {
       setTimeRemaining(timeRemaining);
@@ -214,11 +214,31 @@ export default function GameRoom({ params }) {
       <h2 className="text-3xl font-bold mb-4">Room: {roomId}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white shadow-md rounded-lg p-6">
-          <p className="mb-2">Server Connected: <span className={`font-semibold ${serverConnected ? 'text-green-600' : 'text-red-600'}`}>{serverConnected ? 'Yes' : 'No'}</span></p>
-          <p className="mb-2">Players: <span className="font-semibold">{players.length}</span></p>
-          <p className="mb-2">Status: <span className="font-semibold">{GAME_STATUS_DESCRIPTION[gameStatus]}</span></p>
-          <p className="mb-2">Current Round: <span className="font-semibold">{currentRound}</span></p>
-          <p className="mb-2">Current Turn: <span className="font-semibold">{currentTurn}</span></p>
+          <p className="mb-2">
+            Server Connected:{" "}
+            <span
+              className={`font-semibold ${
+                serverConnected ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {serverConnected ? "Yes" : "No"}
+            </span>
+          </p>
+          <p className="mb-2">
+            Players: <span className="font-semibold">{players.length}</span>
+          </p>
+          <p className="mb-2">
+            Status:{" "}
+            <span className="font-semibold">
+              {GAME_STATUS_DESCRIPTION[gameStatus]}
+            </span>
+          </p>
+          <p className="mb-2">
+            Current Round: <span className="font-semibold">{currentRound}</span>
+          </p>
+          <p className="mb-2">
+            Current Turn: <span className="font-semibold">{currentTurn}</span>
+          </p>
         </div>
         <div className="bg-white shadow-md rounded-lg p-6">
           {serverConnected && (
@@ -246,12 +266,16 @@ export default function GameRoom({ params }) {
             </button>
           )}
         {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
-          <p className="text-lg font-semibold text-gray-600">Waiting for another user...</p>
+          <p className="text-lg font-semibold text-gray-600">
+            Waiting for another user...
+          </p>
         )}
         {gameStatus === GAME_STATUS.NOT_STARTED &&
           players.length === 2 &&
           !isRoomOwner && (
-            <p className="text-lg font-semibold text-gray-600">Waiting for another player to start...</p>
+            <p className="text-lg font-semibold text-gray-600">
+              Waiting for another player to start...
+            </p>
           )}
       </div>
       <div className="mt-8">
@@ -295,9 +319,13 @@ export default function GameRoom({ params }) {
         <div className="mt-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
           <p className="font-bold">Game Over</p>
           {winner === role ? (
-            <p className="mt-2 text-green-600 font-semibold">You won the game!</p>
+            <p className="mt-2 text-green-600 font-semibold">
+              You won the game!
+            </p>
           ) : (
-            <p className="mt-2 text-red-600 font-semibold">You lost the game.</p>
+            <p className="mt-2 text-red-600 font-semibold">
+              You lost the game.
+            </p>
           )}
           <button
             onClick={() => window.location.reload()}
