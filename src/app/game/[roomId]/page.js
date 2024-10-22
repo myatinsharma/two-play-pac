@@ -141,10 +141,8 @@ export default function GameRoom({ params }) {
       console.log("Decoded data:", decodedData);
       console.log("scores..", decodedData.scores);
       console.log("playersPosition..", decodedData.playersPosition);
-      console.log("mazeMap..", decodedData.mazeMap);
       console.log("gameStatus..", decodedData.gameStatus);
       setScore(decodedData.scores);
-      setMazeMap(decodedData.mazeMap);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
     });
