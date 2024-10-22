@@ -106,16 +106,47 @@ export default function GameRoom({ params }) {
     });
 
     socket.on("playerMove", (encodedData) => {
-      const { playersPosition, mazeMap, scores, gameStatus } =
-        msgpack.decode(encodedData);
-      console.log("scores..", scores);
-      console.log("playersPosition..", playersPosition);
-      console.log("mazeMap..", mazeMap);
-      console.log("gameStatus..", gameStatus);
-      setScore(scores);
-      setMazeMap(mazeMap);
-      setPlayersPos(playersPosition);
-      setGameStatus(gameStatus);
+      if (encodedData === undefined) {
+        console.error("Received undefined encodedData in playerMove event");
+        return;
+      }
+
+      let decodedData;
+      try {
+        // If encodedData is already a Uint8Array, use its buffer
+        // Otherwise, assume it's an ArrayBuffer
+        const dataToDecode =
+          encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
+        decodedData = msgpack.decode(new Uint8Array(dataToDecode));
+      } catch (error) {
+        console.error("Error decoding playerMove data:", error);
+        console.log("Raw received data:", encodedData);
+        console.log("Type of received data:", typeof encodedData);
+        if (encodedData instanceof Uint8Array) {
+          console.log("Uint8Array length:", encodedData.length);
+          console.log("First 10 bytes:", encodedData.slice(0, 10));
+        } else if (encodedData instanceof ArrayBuffer) {
+          const view = new Uint8Array(encodedData);
+          console.log("ArrayBuffer length:", encodedData.byteLength);
+          console.log("First 10 bytes:", view.slice(0, 10));
+        }
+        return;
+      }
+
+      if (!decodedData) {
+        console.error("Decoded data is null or undefined");
+        return;
+      }
+
+      console.log("Decoded data:", decodedData);
+      console.log("scores..", decodedData.scores);
+      console.log("playersPosition..", decodedData.playersPosition);
+      console.log("mazeMap..", decodedData.mazeMap);
+      console.log("gameStatus..", decodedData.gameStatus);
+      setScore(decodedData.scores);
+      setMazeMap(decodedData.mazeMap);
+      setPlayersPos(decodedData.playersPosition);
+      setGameStatus(decodedData.gameStatus);
     });
 
     socket.on("timeUpdate", ({ timeRemaining }) => {
