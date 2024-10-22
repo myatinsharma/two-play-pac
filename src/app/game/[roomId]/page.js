@@ -31,6 +31,7 @@ export default function GameRoom({ params }) {
   const [score, setScore] = useState(null);
   const [currentRound, setCurrentRound] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
+  const [eatenSmore, setEatenSmore] = useState(null);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -124,6 +125,10 @@ export default function GameRoom({ params }) {
       setScore(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
+      // Only update eatenSmore if it's defined in the decoded data
+      if (decodedData.eatenSmore) {
+        setEatenSmore(decodedData.eatenSmore);
+      }
     });
 
     socket.on("timeUpdate", ({ timeRemaining }) => {
@@ -300,6 +305,7 @@ export default function GameRoom({ params }) {
               role={role}
               handlePlayerMove={handlePlayerMove}
               gameStatus={gameStatus}
+              eatenSmore={eatenSmore} // This can be null or undefined
             />
           )}
       </div>
