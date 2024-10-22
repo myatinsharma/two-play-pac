@@ -111,27 +111,9 @@ export default function GameRoom({ params }) {
         return;
       }
 
-      let decodedData;
-      try {
-        // If encodedData is already a Uint8Array, use its buffer
-        // Otherwise, assume it's an ArrayBuffer
-        const dataToDecode =
-          encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
-        decodedData = msgpack.decode(new Uint8Array(dataToDecode));
-      } catch (error) {
-        console.error("Error decoding playerMove data:", error);
-        console.log("Raw received data:", encodedData);
-        console.log("Type of received data:", typeof encodedData);
-        if (encodedData instanceof Uint8Array) {
-          console.log("Uint8Array length:", encodedData.length);
-          console.log("First 10 bytes:", encodedData.slice(0, 10));
-        } else if (encodedData instanceof ArrayBuffer) {
-          const view = new Uint8Array(encodedData);
-          console.log("ArrayBuffer length:", encodedData.byteLength);
-          console.log("First 10 bytes:", view.slice(0, 10));
-        }
-        return;
-      }
+      const dataToDecode =
+        encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
+      const decodedData = msgpack.decode(new Uint8Array(dataToDecode));
 
       if (!decodedData) {
         console.error("Decoded data is null or undefined");
@@ -139,9 +121,6 @@ export default function GameRoom({ params }) {
       }
 
       console.log("Decoded data:", decodedData);
-      console.log("scores..", decodedData.scores);
-      console.log("playersPosition..", decodedData.playersPosition);
-      console.log("gameStatus..", decodedData.gameStatus);
       setScore(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
