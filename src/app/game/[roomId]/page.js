@@ -201,25 +201,36 @@ export default function GameRoom({ params }) {
         <thead>
           <tr>
             <th>Round</th>
-            <th>Turn 1 - P1</th>
-            <th>Turn 1 - P2</th>
-            <th>Turn 2 - P1</th>
-            <th>Turn 2 - P2</th>
+            <th>Turn 1</th>
+            <th>Turn 2</th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(score).map(([round, turns]) => (
             <tr key={round}>
               <td>{round}</td>
-              <td>{turns[1][players[0].id] || "-"}</td>
-              <td>{turns[1][players[1].id] || "-"}</td>
-              <td>{turns[2][players[0].id] || "-"}</td>
-              <td>{turns[2][players[1].id] || "-"}</td>
+              <td>{renderTurnResult(turns[1])}</td>
+              <td>{renderTurnResult(turns[2])}</td>
             </tr>
           ))}
         </tbody>
       </table>
     );
+  };
+
+  const renderTurnResult = (turn) => {
+    const player1Score = turn[players[0].id];
+    const player2Score = turn[players[1].id];
+
+    if (player1Score === -1 && player2Score === -1) {
+      return "T";
+    } else if (player1Score > 0) {
+      return "P1";
+    } else if (player2Score > 0) {
+      return "P2";
+    } else {
+      return "";
+    }
   };
 
   return (
