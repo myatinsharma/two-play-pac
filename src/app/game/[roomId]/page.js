@@ -31,7 +31,6 @@ export default function GameRoom({ params }) {
   const [score, setScore] = useState(null);
   const [currentRound, setCurrentRound] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
-  const [eatenSmore, setEatenSmore] = useState(null);
   const [smorePositions, setSmorePositions] = useState([]);
 
   useEffect(() => {
@@ -127,14 +126,8 @@ export default function GameRoom({ params }) {
       setScore(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
-      console.log("decodedData.eatenSmore", decodedData.eatenSmore);
-      // Only update eatenSmore if it's defined in the decoded data
-      if (decodedData.eatenSmore) {
-        setEatenSmore(decodedData.eatenSmore);
-      }
 
       if (decodedData.eatenSmore) {
-        console.log("decodedData.eatenSmore", decodedData.eatenSmore);
         setSmorePositions((prevPositions) =>
           prevPositions.filter(
             (smore) =>
