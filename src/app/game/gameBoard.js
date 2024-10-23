@@ -7,21 +7,25 @@ function GameBoard({
   role,
   handlePlayerMove,
   gameStatus,
-  eatenSmore, // This can be undefined
+  eatenSmore,
+  currentTurn, // Add this prop
 }) {
   const [currentDirection, setCurrentDirection] = useState(null);
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
 
-  // Add a new state to keep track of eaten smores
-  const [eatenSmores, setEatenSmores] = useState([]);
+  // Change this to an object keyed by turn number
+  const [eatenSmoresByTurn, setEatenSmoresByTurn] = useState({});
 
   // Update eatenSmores when a new smore is eaten
   useEffect(() => {
     if (eatenSmore) {
-      setEatenSmores(prev => [...prev, eatenSmore]);
+      setEatenSmoresByTurn(prev => ({
+        ...prev,
+        [currentTurn]: [...(prev[currentTurn] || []), eatenSmore]
+      }));
     }
-  }, [eatenSmore]);
+  }, [eatenSmore, currentTurn]);
 
   const movePlayer = useCallback(
     (direction) => {
@@ -159,7 +163,7 @@ function GameBoard({
                 cellClass += " bg-red-500";
               } else if (cell === 1) {
                 cellClass += " bg-gray-800";
-              } else if (cell === 2 && !eatenSmores.some(smore => smore.row === rowIndex && smore.col === colIndex)) {
+              } else if (cell === 2 && !eatenSmoresByTurn[currentTurn]?.some(smore => smore.row === rowIndex && smore.col === colIndex)) {
                 cellContent = (
                   <div className="w-2 h-2 rounded-full bg-yellow-400" />
                 );

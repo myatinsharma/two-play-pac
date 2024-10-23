@@ -253,6 +253,7 @@ export default function GameRoom({ params }) {
                 handlePlayerMove={handlePlayerMove}
                 gameStatus={gameStatus}
                 eatenSmore={eatenSmore}
+                currentTurn={currentTurn} // Add this prop
               />
             )}
 
