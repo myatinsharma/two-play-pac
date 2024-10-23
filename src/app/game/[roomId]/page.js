@@ -32,6 +32,7 @@ export default function GameRoom({ params }) {
   const [currentRound, setCurrentRound] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
   const [eatenSmore, setEatenSmore] = useState(null);
+  const [smorePositions, setSmorePositions] = useState([]);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -77,6 +78,7 @@ export default function GameRoom({ params }) {
       if (data.settings && data.settings.timeLimit) {
         setTimeRemaining(data.settings.timeLimit);
       }
+      setSmorePositions(data.mazeMap.smorePositions || []);
     });
 
     socket.on("roleUpdate", ({ players }) => {
@@ -125,9 +127,21 @@ export default function GameRoom({ params }) {
       setScore(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
+      console.log("decodedData.eatenSmore", decodedData.eatenSmore);
       // Only update eatenSmore if it's defined in the decoded data
       if (decodedData.eatenSmore) {
         setEatenSmore(decodedData.eatenSmore);
+      }
+
+      if (decodedData.eatenSmore) {
+        console.log("decodedData.eatenSmore", decodedData.eatenSmore);
+        setSmorePositions((prevPositions) =>
+          prevPositions.filter(
+            (smore) =>
+              smore.row !== decodedData.eatenSmore.row ||
+              smore.col !== decodedData.eatenSmore.col
+          )
+        );
       }
     });
 
@@ -252,7 +266,7 @@ export default function GameRoom({ params }) {
                 role={role}
                 handlePlayerMove={handlePlayerMove}
                 gameStatus={gameStatus}
-                eatenSmore={eatenSmore}
+                smorePositions={smorePositions}
               />
             )}
 
