@@ -255,7 +255,7 @@ export default function GameRoom({ params }) {
                 eatenSmore={eatenSmore}
               />
             )}
-          
+
           {/* Game controls and status messages */}
           <div className="mt-4">
             {isRoomOwner &&
@@ -304,7 +304,11 @@ export default function GameRoom({ params }) {
           <div className="bg-white shadow-md rounded-lg p-4 mb-4">
             <p className="mb-2">
               Server Connected:{" "}
-              <span className={`font-semibold ${serverConnected ? "text-green-600" : "text-red-600"}`}>
+              <span
+                className={`font-semibold ${
+                  serverConnected ? "text-green-600" : "text-red-600"
+                }`}
+              >
                 {serverConnected ? "Yes" : "No"}
               </span>
             </p>
@@ -312,10 +316,14 @@ export default function GameRoom({ params }) {
               Players: <span className="font-semibold">{players.length}</span>
             </p>
             <p className="mb-2">
-              Status: <span className="font-semibold">{GAME_STATUS_DESCRIPTION[gameStatus]}</span>
+              Status:{" "}
+              <span className="font-semibold">
+                {GAME_STATUS_DESCRIPTION[gameStatus]}
+              </span>
             </p>
             <p className="mb-2">
-              Current Round: <span className="font-semibold">{currentRound}</span>
+              Current Round:{" "}
+              <span className="font-semibold">{currentRound}</span>
             </p>
             <p className="mb-2">
               Current Turn: <span className="font-semibold">{currentTurn}</span>
