@@ -236,35 +236,93 @@ export default function GameRoom({ params }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-4">Room: {roomId}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <p className="mb-2">
-            Server Connected:{" "}
-            <span
-              className={`font-semibold ${
-                serverConnected ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {serverConnected ? "Yes" : "No"}
-            </span>
-          </p>
-          <p className="mb-2">
-            Players: <span className="font-semibold">{players.length}</span>
-          </p>
-          <p className="mb-2">
-            Status:{" "}
-            <span className="font-semibold">
-              {GAME_STATUS_DESCRIPTION[gameStatus]}
-            </span>
-          </p>
-          <p className="mb-2">
-            Current Round: <span className="font-semibold">{currentRound}</span>
-          </p>
-          <p className="mb-2">
-            Current Turn: <span className="font-semibold">{currentTurn}</span>
-          </p>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-3/4">
+          {/* Game Board */}
+          {(gameStatus === GAME_STATUS.GAME_OVER ||
+            gameStatus === GAME_STATUS.TURN_COMPLETED ||
+            gameStatus === GAME_STATUS.STARTED ||
+            gameStatus === GAME_STATUS.TURN_STARTED) &&
+            players.length === 2 &&
+            settingsData &&
+            mazeMap && (
+              <GameBoard
+                mazeMap={mazeMap}
+                playersPos={playersPos}
+                role={role}
+                handlePlayerMove={handlePlayerMove}
+                gameStatus={gameStatus}
+                eatenSmore={eatenSmore}
+              />
+            )}
+          
+          {/* Game controls and status messages */}
+          <div className="mt-4">
+            {isRoomOwner &&
+              (gameStatus === GAME_STATUS.NOT_STARTED ||
+                gameStatus === GAME_STATUS.TURN_STARTED) &&
+              settingsData &&
+              players.length === 2 && (
+                <button
+                  onClick={startGame}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  Start Game
+                </button>
+              )}
+            {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
+              <p className="text-lg font-semibold text-gray-600">
+                Waiting for another user...
+              </p>
+            )}
+            {gameStatus === GAME_STATUS.NOT_STARTED &&
+              players.length === 2 &&
+              !isRoomOwner && (
+                <p className="text-lg font-semibold text-gray-600">
+                  Waiting for another player to start...
+                </p>
+              )}
+            {gameStatus === GAME_STATUS.TURN_COMPLETED && (
+              <button
+                onClick={handleNextTurn}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Next Turn
+              </button>
+            )}
+          </div>
+
+          {/* Scoreboard */}
+          <div className="mt-8">
+            <h3 className="text-2xl font-bold mb-4">Scoreboard</h3>
+            {renderScoreboard()}
+          </div>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-6">
+
+        <div className="w-full md:w-1/4">
+          {/* Game Info */}
+          <div className="bg-white shadow-md rounded-lg p-4 mb-4">
+            <p className="mb-2">
+              Server Connected:{" "}
+              <span className={`font-semibold ${serverConnected ? "text-green-600" : "text-red-600"}`}>
+                {serverConnected ? "Yes" : "No"}
+              </span>
+            </p>
+            <p className="mb-2">
+              Players: <span className="font-semibold">{players.length}</span>
+            </p>
+            <p className="mb-2">
+              Status: <span className="font-semibold">{GAME_STATUS_DESCRIPTION[gameStatus]}</span>
+            </p>
+            <p className="mb-2">
+              Current Round: <span className="font-semibold">{currentRound}</span>
+            </p>
+            <p className="mb-2">
+              Current Turn: <span className="font-semibold">{currentTurn}</span>
+            </p>
+          </div>
+
+          {/* Game Settings */}
           {serverConnected && (
             <GameSettings
               isRoomOwner={isRoomOwner}
@@ -276,63 +334,10 @@ export default function GameRoom({ params }) {
           )}
         </div>
       </div>
-      <div className="mt-8">
-        {isRoomOwner &&
-          (gameStatus === GAME_STATUS.NOT_STARTED ||
-            gameStatus === GAME_STATUS.TURN_STARTED) &&
-          settingsData &&
-          players.length === 2 && (
-            <button
-              onClick={startGame}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-            >
-              Start Game
-            </button>
-          )}
-        {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
-          <p className="text-lg font-semibold text-gray-600">
-            Waiting for another user...
-          </p>
-        )}
-        {gameStatus === GAME_STATUS.NOT_STARTED &&
-          players.length === 2 &&
-          !isRoomOwner && (
-            <p className="text-lg font-semibold text-gray-600">
-              Waiting for another player to start...
-            </p>
-          )}
-      </div>
-      <div className="mt-8">
-        {(gameStatus === GAME_STATUS.GAME_OVER ||
-          gameStatus === GAME_STATUS.TURN_COMPLETED ||
-          gameStatus === GAME_STATUS.STARTED ||
-          gameStatus === GAME_STATUS.TURN_STARTED) &&
-          players.length === 2 &&
-          settingsData &&
-          mazeMap && (
-            <GameBoard
-              mazeMap={mazeMap}
-              playersPos={playersPos}
-              role={role}
-              handlePlayerMove={handlePlayerMove}
-              gameStatus={gameStatus}
-              eatenSmore={eatenSmore} // This can be null or undefined
-            />
-          )}
-      </div>
+
       {showLoader && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="loader"></div>
-        </div>
-      )}
-      {gameStatus === GAME_STATUS.TURN_COMPLETED && (
-        <div className="mt-4">
-          <button
-            onClick={handleNextTurn}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Next Turn
-          </button>
         </div>
       )}
       {playerDisconnected && players.length === 1 && (
@@ -367,10 +372,6 @@ export default function GameRoom({ params }) {
             <p className="font-bold">Time Remaining: {timeRemaining} seconds</p>
           </div>
         )}
-      <div className="mt-8">
-        <h3 className="text-2xl font-bold mb-4">Scoreboard</h3>
-        {renderScoreboard()}
-      </div>
     </div>
   );
 }
