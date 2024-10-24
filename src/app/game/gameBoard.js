@@ -7,14 +7,21 @@ function GameBoard({
   role,
   handlePlayerMove,
   gameStatus,
+  smorePositions,
 }) {
   const [currentDirection, setCurrentDirection] = useState(null);
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [showArrows, setShowArrows] = useState(false);
 
-  console.log("playersPos909090", playersPos);
-  console.log("role909090", role);
-  console.log("gameStatus909090", gameStatus);
+  // Add a new state to keep track of eaten smores
+  const [eatenSmores, setEatenSmores] = useState([]);
+
+  // Update eatenSmores when a new smore is eaten
+  useEffect(() => {
+    if (smorePositions) {
+      setEatenSmores(smorePositions);
+    }
+  }, [smorePositions]);
 
   const movePlayer = useCallback(
     (direction) => {
@@ -152,7 +159,11 @@ function GameBoard({
                 cellClass += " bg-red-500";
               } else if (cell === 1) {
                 cellClass += " bg-gray-800";
-              } else if (cell === 2) {
+              } else if (
+                smorePositions.some(
+                  (smore) => smore.row === rowIndex && smore.col === colIndex
+                )
+              ) {
                 cellContent = (
                   <div className="w-2 h-2 rounded-full bg-yellow-400" />
                 );
