@@ -102,6 +102,7 @@ export default function GameRoom({ params }) {
     socket.on("settingsUpdate", ({ settings, mazeMap, players }) => {
       setGameSettings(settings);
       setMazeMap(mazeMap);
+      setSmorePositions(mazeMap.smorePositions || []);
       if (players.length === 2 && settings.totalRounds) {
         setScoreboard(settings.totalRounds, players);
       }
