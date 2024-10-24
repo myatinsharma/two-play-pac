@@ -4,11 +4,7 @@ import io from "socket.io-client";
 import { useRouter } from "next/navigation";
 import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
-import {
-  GAME_STATUS,
-  GAME_STATUS_DESCRIPTION,
-  PLAYER_ROLES,
-} from "../../constants";
+import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 import * as msgpack from "msgpack-lite";
 
 let socket;
@@ -122,7 +118,6 @@ export default function GameRoom({ params }) {
         console.error("Decoded data is null or undefined");
         return;
       }
-
       console.log("Decoded data:", decodedData);
       setScore(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
@@ -136,6 +131,9 @@ export default function GameRoom({ params }) {
               smore.col !== decodedData.eatenSmore.col
           )
         );
+      }
+      if (decodedData.winner) {
+        setWinner(decodedData.winner);
       }
     });
 
@@ -364,7 +362,7 @@ export default function GameRoom({ params }) {
       {gameStatus === GAME_STATUS.GAME_OVER && (
         <div className="mt-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
           <p className="font-bold">Game Over</p>
-          {winner === role ? (
+          {winner === socket.id ? ( // Check if the winner is the user's socket.id
             <p className="mt-2 text-green-600 font-semibold">
               You won the game!
             </p>
