@@ -50,7 +50,7 @@ function GameBoard({
 
   useEffect(() => {
     let animationFrameId;
-    const moveInterval = 100; // Adjust this value to change movement speed
+    const moveInterval = 70; // Adjust this value to change movement speed
 
     const gameLoop = (timestamp) => {
       if (
