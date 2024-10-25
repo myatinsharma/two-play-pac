@@ -245,11 +245,18 @@ export default function GameRoom({ params }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-xl font-bold mb-4">Room: {roomId}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Room: {roomId}</h2>
+        {(gameStatus === GAME_STATUS.STARTED ||
+          gameStatus === GAME_STATUS.TURN_STARTED) &&
+          timeRemaining !== null && (
+            <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded">
+              Time Remaining: {timeRemaining}s
+            </div>
+          )}
+      </div>
       <div className="text-xs mb-4">
-        Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
-        {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
-        Current Round: {currentRound} | Current Turn: {currentTurn}
+        Server Connected: {serverConnected ? "Yes" : "No"} | Players: {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} | Current Round: {currentRound} | Current Turn: {currentTurn}
       </div>
       {serverConnected && (
         <GameSettings
@@ -288,7 +295,7 @@ export default function GameRoom({ params }) {
             players.length === 2 && (
               <button
                 onClick={startGame}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
               >
                 Start Game
               </button>
@@ -309,7 +316,7 @@ export default function GameRoom({ params }) {
           {gameStatus === GAME_STATUS.TURN_COMPLETED && (
             <button
               onClick={handleNextTurn}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded"
             >
               Next Turn
             </button>
@@ -359,19 +366,12 @@ export default function GameRoom({ params }) {
           )}
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
           >
             Play Again
           </button>
         </div>
       )}
-      {(gameStatus === GAME_STATUS.STARTED ||
-        gameStatus === GAME_STATUS.TURN_STARTED) &&
-        timeRemaining !== null && (
-          <div className="mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-            <p className="font-bold">Time Remaining: {timeRemaining} seconds</p>
-          </div>
-        )}
     </div>
   );
 }

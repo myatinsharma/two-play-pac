@@ -33,7 +33,13 @@ export default function GameSettings({
 
   const handleSettingChange = (event) => {
     const { name, value } = event.target;
-    const numericSettings = ["timeLimit", "smoreCount", "totalRounds", "maze", "role"];
+    const numericSettings = [
+      "timeLimit",
+      "smoreCount",
+      "totalRounds",
+      "maze",
+      "role",
+    ];
     const newValue = numericSettings.includes(name) ? Number(value) : value;
     handleSettingsChange({ target: { name, value: newValue } });
   };
@@ -50,9 +56,17 @@ export default function GameSettings({
               </label>
               <select
                 name={setting.name}
-                value={setting.name === "role" ? role : (settingsData ? settingsData[setting.name] : "")}
+                value={
+                  setting.name === "role"
+                    ? role
+                    : settingsData
+                    ? settingsData[setting.name]
+                    : ""
+                }
                 onChange={handleSettingChange}
-                disabled={!isRoomOwner || (setting.name !== "role" && gameStatus !== GAME_STATUS.NOT_STARTED)}
+                disabled={
+                  !isRoomOwner || gameStatus !== GAME_STATUS.NOT_STARTED
+                }
                 className="border-gray-300 rounded-md"
               >
                 {options.map((option) => (
