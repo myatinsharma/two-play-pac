@@ -256,7 +256,9 @@ export default function GameRoom({ params }) {
           )}
       </div>
       <div className="text-xs mb-4">
-        Server Connected: {serverConnected ? "Yes" : "No"} | Players: {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} | Current Round: {currentRound} | Current Turn: {currentTurn}
+        Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
+        {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
+        Current Round: {currentRound} | Current Turn: {currentTurn}
       </div>
       {serverConnected && (
         <GameSettings
@@ -301,7 +303,7 @@ export default function GameRoom({ params }) {
               </button>
             )}
           {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
-            <p className="text-lg font-semibold text-gray-600">
+            <p className="text-sm font-semibold text-gray-600">
               Waiting for another user...
             </p>
           )}
@@ -309,7 +311,7 @@ export default function GameRoom({ params }) {
             gameStatus === GAME_STATUS.TURN_STARTED) &&
             players.length === 2 &&
             !isRoomOwner && (
-              <p className="text-lg font-semibold text-gray-600">
+              <p className="text-sm font-semibold text-gray-600">
                 Waiting for another player to start...
               </p>
             )}

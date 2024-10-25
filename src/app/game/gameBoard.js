@@ -182,7 +182,7 @@ function GameBoard({
       </div>
       <button
         onClick={toggleArrows}
-        className="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded"
+        className="mt-4 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
       >
         {showArrows ? "Hide" : "Show"} Arrows
       </button>
