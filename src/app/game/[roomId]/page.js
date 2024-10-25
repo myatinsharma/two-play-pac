@@ -6,6 +6,7 @@ import GameSettings from "../gameSettings";
 import GameBoard from "../gameBoard";
 import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 import * as msgpack from "msgpack-lite";
+import HowToPlayModal from "../howToPlayModal";
 
 let socket;
 
@@ -28,6 +29,7 @@ export default function GameRoom({ params }) {
   const [currentRound, setCurrentRound] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [smorePositions, setSmorePositions] = useState([]);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -372,12 +374,24 @@ export default function GameRoom({ params }) {
 
       {/* Fixed footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 text-xs">
-        <div className="container mx-auto">
-          Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
-          {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
-          Current Round: {currentRound} | Current Turn: {currentTurn}
+        <div className="container mx-auto flex justify-between items-center">
+          <div>
+            Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
+            {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
+            Current Round: {currentRound} | Current Turn: {currentTurn}
+          </div>
+          <button
+            onClick={() => setShowHowToPlay(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center focus:outline-none"
+          >
+            ?
+          </button>
         </div>
       </div>
+
+      {showHowToPlay && (
+        <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
+      )}
     </div>
   );
 }
