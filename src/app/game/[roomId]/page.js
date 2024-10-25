@@ -244,7 +244,7 @@ export default function GameRoom({ params }) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Room: {roomId}</h2>
         {(gameStatus === GAME_STATUS.STARTED ||
@@ -254,11 +254,6 @@ export default function GameRoom({ params }) {
               Time Remaining: {timeRemaining}s
             </div>
           )}
-      </div>
-      <div className="text-xs mb-4">
-        Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
-        {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
-        Current Round: {currentRound} | Current Turn: {currentTurn}
       </div>
       {serverConnected && (
         <GameSettings
@@ -374,6 +369,15 @@ export default function GameRoom({ params }) {
           </button>
         </div>
       )}
+
+      {/* Fixed footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 text-xs">
+        <div className="container mx-auto">
+          Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
+          {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
+          Current Round: {currentRound} | Current Turn: {currentTurn}
+        </div>
+      </div>
     </div>
   );
 }
