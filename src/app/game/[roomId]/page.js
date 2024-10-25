@@ -25,8 +25,8 @@ export default function GameRoom({ params }) {
   const [isRoomOwner, setIsRoomOwner] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [score, setScore] = useState(null);
-  const [currentRound, setCurrentRound] = useState(null);
-  const [currentTurn, setCurrentTurn] = useState(null);
+  const [currentRound, setCurrentRound] = useState(0);
+  const [currentTurn, setCurrentTurn] = useState(0);
   const [smorePositions, setSmorePositions] = useState([]);
 
   useEffect(() => {
@@ -198,25 +198,25 @@ export default function GameRoom({ params }) {
     socket.emit("nextTurn", { roomId });
   };
 
-  // Add this new function to render the scoreboard
+  // Update the renderScoreboard function
   const renderScoreboard = () => {
     if (!score || (players && players.length !== 2)) return null;
 
     return (
-      <table className="scoreboard">
+      <table className="scoreboard text-xs w-full">
         <thead>
-          <tr>
-            <th>Round</th>
-            <th>Turn 1</th>
-            <th>Turn 2</th>
+          <tr className="bg-gray-100">
+            <th className="p-1 border">Round</th>
+            <th className="p-1 border">Turn 1</th>
+            <th className="p-1 border">Turn 2</th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(score).map(([round, turns]) => (
             <tr key={round}>
-              <td>{round}</td>
-              <td>{renderTurnResult(turns[1])}</td>
-              <td>{renderTurnResult(turns[2])}</td>
+              <td className="p-1 border text-center">{round}</td>
+              <td className="p-1 border text-center">{renderTurnResult(turns[1])}</td>
+              <td className="p-1 border text-center">{renderTurnResult(turns[2])}</td>
             </tr>
           ))}
         </tbody>
@@ -242,6 +242,11 @@ export default function GameRoom({ params }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-4">Room: {roomId}</h2>
+      <div className="text-xs mb-4">
+        Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
+        {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
+        Current Round: {currentRound} | Current Turn: {currentTurn}
+      </div>
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-3/4">
           {/* Game Board */}
@@ -300,43 +305,15 @@ export default function GameRoom({ params }) {
           </div>
 
           {/* Scoreboard */}
-          <div className="mt-8">
-            <h3 className="text-2xl font-bold mb-4">Scoreboard</h3>
-            {renderScoreboard()}
-          </div>
+          {players.length === 2 && (
+            <div className="mt-4">
+              <h3 className="text-lg font-bold mb-2">Scoreboard</h3>
+              {renderScoreboard()}
+            </div>
+          )}
         </div>
 
         <div className="w-full md:w-1/4">
-          {/* Game Info */}
-          <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-            <p className="mb-2">
-              Server Connected:{" "}
-              <span
-                className={`font-semibold ${
-                  serverConnected ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {serverConnected ? "Yes" : "No"}
-              </span>
-            </p>
-            <p className="mb-2">
-              Players: <span className="font-semibold">{players.length}</span>
-            </p>
-            <p className="mb-2">
-              Status:{" "}
-              <span className="font-semibold">
-                {GAME_STATUS_DESCRIPTION[gameStatus]}
-              </span>
-            </p>
-            <p className="mb-2">
-              Current Round:{" "}
-              <span className="font-semibold">{currentRound}</span>
-            </p>
-            <p className="mb-2">
-              Current Turn: <span className="font-semibold">{currentTurn}</span>
-            </p>
-          </div>
-
           {/* Game Settings */}
           {serverConnected && (
             <GameSettings
@@ -361,20 +338,22 @@ export default function GameRoom({ params }) {
         </div>
       )}
       {gameStatus === GAME_STATUS.GAME_OVER && (
-        <div className={`mt-4 px-4 py-3 rounded ${
-          winner === socket.id ? 'bg-green-100 border border-green-400 text-green-700' :
-          winner === -1 ? 'bg-blue-100 border border-blue-400 text-blue-700' :
-          'bg-red-100 border border-red-400 text-red-700'
-        }`}>
+        <div
+          className={`mt-4 px-4 py-3 rounded ${
+            winner === socket.id
+              ? "bg-green-100 border border-green-400 text-green-700"
+              : winner === -1
+              ? "bg-blue-100 border border-blue-400 text-blue-700"
+              : "bg-red-100 border border-red-400 text-red-700"
+          }`}
+        >
           <p className="font-bold">Game Over</p>
           {winner === socket.id ? (
             <p className="mt-2 text-green-600 font-semibold">
               You won the game!
             </p>
           ) : winner === -1 ? (
-            <p className="mt-2 text-blue-600 font-semibold">
-              It's a tie!
-            </p>
+            <p className="mt-2 text-blue-600 font-semibold">It's a tie!</p>
           ) : (
             <p className="mt-2 text-red-600 font-semibold">
               You lost the game.
