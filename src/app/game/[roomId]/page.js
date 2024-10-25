@@ -7,6 +7,7 @@ import GameBoard from "../gameBoard";
 import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 import * as msgpack from "msgpack-lite";
 import HowToPlayModal from "../howToPlayModal";
+import GameOverModal from "../gameOverModal";
 
 let socket;
 
@@ -30,6 +31,7 @@ export default function GameRoom({ params }) {
   const [currentTurn, setCurrentTurn] = useState(0);
   const [smorePositions, setSmorePositions] = useState([]);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -134,8 +136,11 @@ export default function GameRoom({ params }) {
           )
         );
       }
-      if (decodedData.winner !== undefined) {
+
+      // Only set the winner and show the modal if the game status is GAME_OVER
+      if (decodedData.gameStatus === GAME_STATUS.GAME_OVER) {
         setWinner(decodedData.winner);
+        setShowGameOverModal(true);
       }
     });
 
@@ -245,6 +250,14 @@ export default function GameRoom({ params }) {
     }
   };
 
+  const handlePlayAgain = () => {
+    window.location.reload();
+  };
+
+  const handleCloseGameOverModal = () => {
+    setShowGameOverModal(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
@@ -341,35 +354,13 @@ export default function GameRoom({ params }) {
           <p className="font-bold">Player Disconnected</p>
         </div>
       )}
-      {gameStatus === GAME_STATUS.GAME_OVER && (
-        <div
-          className={`mt-4 px-4 py-3 rounded ${
-            winner === socket.id
-              ? "bg-green-100 border border-green-400 text-green-700"
-              : winner === -1
-              ? "bg-blue-100 border border-blue-400 text-blue-700"
-              : "bg-red-100 border border-red-400 text-red-700"
-          }`}
-        >
-          <p className="font-bold">Game Over</p>
-          {winner === socket.id ? (
-            <p className="mt-2 text-green-600 font-semibold">
-              You won the game!
-            </p>
-          ) : winner === -1 ? (
-            <p className="mt-2 text-blue-600 font-semibold">It's a tie!</p>
-          ) : (
-            <p className="mt-2 text-red-600 font-semibold">
-              You lost the game.
-            </p>
-          )}
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
-          >
-            Play Again
-          </button>
-        </div>
+      {showGameOverModal && (
+        <GameOverModal
+          winner={winner}
+          socketId={socket.id}
+          onPlayAgain={handlePlayAgain}
+          onClose={handleCloseGameOverModal}
+        />
       )}
 
       {/* Fixed footer */}
