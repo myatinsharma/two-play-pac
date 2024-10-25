@@ -127,6 +127,11 @@ function GameBoard({
     setCurrentDirection(null);
   };
 
+  const preventDefaultAndMove = (event, direction) => {
+    event.preventDefault();
+    handleArrowClick(direction);
+  };
+
   const toggleArrows = () => {
     setShowArrows((prev) => !prev);
   };
@@ -189,39 +194,39 @@ function GameBoard({
       {showArrows && (
         <div className="mt-4 flex flex-col items-center">
           <button
-            onTouchStart={() => handleArrowClick("up")}
+            onTouchStart={(e) => preventDefaultAndMove(e, "up")}
             onTouchEnd={handleArrowRelease}
-            onMouseDown={() => handleArrowClick("up")}
+            onMouseDown={(e) => preventDefaultAndMove(e, "up")}
             onMouseUp={handleArrowRelease}
-            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mb-2"
+            className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mb-2 select-none"
           >
             ▲
           </button>
           <div className="flex justify-center">
             <button
-              onTouchStart={() => handleArrowClick("left")}
+              onTouchStart={(e) => preventDefaultAndMove(e, "left")}
               onTouchEnd={handleArrowRelease}
-              onMouseDown={() => handleArrowClick("left")}
+              onMouseDown={(e) => preventDefaultAndMove(e, "left")}
               onMouseUp={handleArrowRelease}
-              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mr-2"
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mr-2 select-none"
             >
               ◀
             </button>
             <button
-              onTouchStart={() => handleArrowClick("down")}
+              onTouchStart={(e) => preventDefaultAndMove(e, "down")}
               onTouchEnd={handleArrowRelease}
-              onMouseDown={() => handleArrowClick("down")}
+              onMouseDown={(e) => preventDefaultAndMove(e, "down")}
               onMouseUp={handleArrowRelease}
-              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mx-2"
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full mx-2 select-none"
             >
               ▼
             </button>
             <button
-              onTouchStart={() => handleArrowClick("right")}
+              onTouchStart={(e) => preventDefaultAndMove(e, "right")}
               onTouchEnd={handleArrowRelease}
-              onMouseDown={() => handleArrowClick("right")}
+              onMouseDown={(e) => preventDefaultAndMove(e, "right")}
               onMouseUp={handleArrowRelease}
-              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full ml-2"
+              className="w-16 h-16 bg-gray-200 hover:bg-gray-300 text-2xl font-bold rounded-full ml-2 select-none"
             >
               ▶
             </button>
