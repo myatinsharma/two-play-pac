@@ -215,8 +215,12 @@ export default function GameRoom({ params }) {
           {Object.entries(score).map(([round, turns]) => (
             <tr key={round}>
               <td className="p-1 border text-center">{round}</td>
-              <td className="p-1 border text-center">{renderTurnResult(turns[1])}</td>
-              <td className="p-1 border text-center">{renderTurnResult(turns[2])}</td>
+              <td className="p-1 border text-center">
+                {renderTurnResult(turns[1])}
+              </td>
+              <td className="p-1 border text-center">
+                {renderTurnResult(turns[2])}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -247,84 +251,78 @@ export default function GameRoom({ params }) {
         {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
         Current Round: {currentRound} | Current Turn: {currentTurn}
       </div>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-3/4">
-          {/* Game Board */}
-          {(gameStatus === GAME_STATUS.GAME_OVER ||
-            gameStatus === GAME_STATUS.TURN_COMPLETED ||
-            gameStatus === GAME_STATUS.STARTED ||
-            gameStatus === GAME_STATUS.TURN_STARTED) &&
-            players.length === 2 &&
-            settingsData &&
-            mazeMap && (
-              <GameBoard
-                mazeMap={mazeMap}
-                playersPos={playersPos}
-                role={role}
-                handlePlayerMove={handlePlayerMove}
-                gameStatus={gameStatus}
-                smorePositions={smorePositions}
-              />
-            )}
-
-          {/* Game controls and status messages */}
-          <div className="mt-4">
-            {isRoomOwner &&
-              (gameStatus === GAME_STATUS.NOT_STARTED ||
-                gameStatus === GAME_STATUS.TURN_STARTED) &&
-              settingsData &&
-              players.length === 2 && (
-                <button
-                  onClick={startGame}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Start Game
-                </button>
-              )}
-            {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
-              <p className="text-lg font-semibold text-gray-600">
-                Waiting for another user...
-              </p>
-            )}
-            {(gameStatus === GAME_STATUS.NOT_STARTED ||
-              gameStatus === GAME_STATUS.TURN_STARTED) &&
-              players.length === 2 &&
-              !isRoomOwner && (
-                <p className="text-lg font-semibold text-gray-600">
-                  Waiting for another player to start...
-                </p>
-              )}
-            {gameStatus === GAME_STATUS.TURN_COMPLETED && (
-              <button
-                onClick={handleNextTurn}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Next Turn
-              </button>
-            )}
-          </div>
-
-          {/* Scoreboard */}
-          {players.length === 2 && (
-            <div className="mt-4">
-              <h3 className="text-lg font-bold mb-2">Scoreboard</h3>
-              {renderScoreboard()}
-            </div>
-          )}
-        </div>
-
-        <div className="w-full md:w-1/4">
-          {/* Game Settings */}
-          {serverConnected && (
-            <GameSettings
-              isRoomOwner={isRoomOwner}
-              settingsData={settingsData}
-              gameStatus={gameStatus}
+      {serverConnected && (
+        <GameSettings
+          isRoomOwner={isRoomOwner}
+          settingsData={settingsData}
+          gameStatus={gameStatus}
+          role={role}
+          handleSettingsChange={handleSettingsChange}
+        />
+      )}
+      <div className="mt-4">
+        {/* Game Board */}
+        {(gameStatus === GAME_STATUS.GAME_OVER ||
+          gameStatus === GAME_STATUS.TURN_COMPLETED ||
+          gameStatus === GAME_STATUS.STARTED ||
+          gameStatus === GAME_STATUS.TURN_STARTED) &&
+          players.length === 2 &&
+          settingsData &&
+          mazeMap && (
+            <GameBoard
+              mazeMap={mazeMap}
+              playersPos={playersPos}
               role={role}
-              handleSettingsChange={handleSettingsChange}
+              handlePlayerMove={handlePlayerMove}
+              gameStatus={gameStatus}
+              smorePositions={smorePositions}
             />
           )}
+
+        {/* Game controls and status messages */}
+        <div className="mt-4">
+          {isRoomOwner &&
+            (gameStatus === GAME_STATUS.NOT_STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED) &&
+            settingsData &&
+            players.length === 2 && (
+              <button
+                onClick={startGame}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Start Game
+              </button>
+            )}
+          {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
+            <p className="text-lg font-semibold text-gray-600">
+              Waiting for another user...
+            </p>
+          )}
+          {(gameStatus === GAME_STATUS.NOT_STARTED ||
+            gameStatus === GAME_STATUS.TURN_STARTED) &&
+            players.length === 2 &&
+            !isRoomOwner && (
+              <p className="text-lg font-semibold text-gray-600">
+                Waiting for another player to start...
+              </p>
+            )}
+          {gameStatus === GAME_STATUS.TURN_COMPLETED && (
+            <button
+              onClick={handleNextTurn}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Next Turn
+            </button>
+          )}
         </div>
+
+        {/* Scoreboard */}
+        {players.length === 2 && (
+          <div className="mt-4">
+            <h3 className="text-lg font-bold mb-2">Scoreboard</h3>
+            {renderScoreboard()}
+          </div>
+        )}
       </div>
 
       {showLoader && (
