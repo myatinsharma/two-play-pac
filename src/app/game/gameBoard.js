@@ -133,7 +133,7 @@ function GameBoard({
 
   return (
     <div className="mt-8">
-      <h3 className="text-2xl font-bold mb-4">Game Board</h3>
+      <h3 className="text-xl font-bold mb-4">Game Board</h3>
       <div className="flex justify-center">
         <div
           className="grid gap-0 border border-gray-300"

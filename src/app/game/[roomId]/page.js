@@ -245,7 +245,7 @@ export default function GameRoom({ params }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-4">Room: {roomId}</h2>
+      <h2 className="text-xl font-bold mb-4">Room: {roomId}</h2>
       <div className="text-xs mb-4">
         Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
         {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
