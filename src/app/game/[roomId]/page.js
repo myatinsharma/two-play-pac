@@ -132,7 +132,7 @@ export default function GameRoom({ params }) {
           )
         );
       }
-      if (decodedData.winner) {
+      if (decodedData.winner !== undefined) {
         setWinner(decodedData.winner);
       }
     });
@@ -281,7 +281,8 @@ export default function GameRoom({ params }) {
                 Waiting for another user...
               </p>
             )}
-            {gameStatus === GAME_STATUS.NOT_STARTED &&
+            {(gameStatus === GAME_STATUS.NOT_STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED) &&
               players.length === 2 &&
               !isRoomOwner && (
                 <p className="text-lg font-semibold text-gray-600">
@@ -360,11 +361,19 @@ export default function GameRoom({ params }) {
         </div>
       )}
       {gameStatus === GAME_STATUS.GAME_OVER && (
-        <div className="mt-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+        <div className={`mt-4 px-4 py-3 rounded ${
+          winner === socket.id ? 'bg-green-100 border border-green-400 text-green-700' :
+          winner === -1 ? 'bg-blue-100 border border-blue-400 text-blue-700' :
+          'bg-red-100 border border-red-400 text-red-700'
+        }`}>
           <p className="font-bold">Game Over</p>
-          {winner === socket.id ? ( // Check if the winner is the user's socket.id
+          {winner === socket.id ? (
             <p className="mt-2 text-green-600 font-semibold">
               You won the game!
+            </p>
+          ) : winner === -1 ? (
+            <p className="mt-2 text-blue-600 font-semibold">
+              It's a tie!
             </p>
           ) : (
             <p className="mt-2 text-red-600 font-semibold">
