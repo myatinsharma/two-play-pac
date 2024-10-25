@@ -16,8 +16,8 @@
       { "value": 4, "label": "4" }
     ],
     "roles": [
-      { "value": 1, "label": "Chaser" },
-      { "value": 2, "label": "Chasee" }
+      { "value": 1, "label": "Bear" },
+      { "value": 2, "label": "Camper" }
     ],
     "maze": [
       { "value": 0, "label": "Random" },

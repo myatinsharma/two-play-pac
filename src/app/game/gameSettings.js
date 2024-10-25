@@ -50,8 +50,13 @@ export default function GameSettings({
         {settingsFields.map((setting) => {
           const options = settingOptionsData[setting.optionsKey] || [];
           return (
-            <div key={setting.name} className="mr-4 mb-1">
-              <label className="font-medium text-gray-700 mr-1">
+            <div
+              key={setting.name}
+              className={`mr-4 mb-1 ${
+                setting.name === "role" ? "bg-yellow-100 p-1 rounded" : ""
+              }`}
+            >
+              <label className="font-medium mr-1 text-gray-700">
                 {setting.label}:
               </label>
               <select
@@ -67,10 +72,16 @@ export default function GameSettings({
                 disabled={
                   !isRoomOwner || gameStatus !== GAME_STATUS.NOT_STARTED
                 }
-                className="border-gray-300 rounded-md"
+                className={`border-gray-300 rounded-md ${
+                  setting.name === "role" ? "bg-yellow-100" : ""
+                }`}
               >
                 {options.map((option) => (
-                  <option key={option.value} value={option.value}>
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    className={setting.name === "role" ? "bg-yellow-100" : ""}
+                  >
                     {option.label}
                   </option>
                 ))}
