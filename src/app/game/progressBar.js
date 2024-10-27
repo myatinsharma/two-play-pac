@@ -16,11 +16,11 @@ const ProgressBar = ({ players, scores, totalRounds }) => {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {players.map((player, index) => (
         <div
           key={player.id}
-          className="relative h-4 bg-gray-200 rounded-full overflow-hidden"
+          className="relative h-2 bg-gray-200 overflow-hidden"
         >
           <div className="absolute inset-0 flex">
             {renderDivisions(totalRounds)}
@@ -34,8 +34,8 @@ const ProgressBar = ({ players, scores, totalRounds }) => {
               ...(index === 1 ? { marginLeft: "auto", float: "right" } : {}),
             }}
           ></div>
-          <span className="absolute inset-0 flex items-center px-2 text-xs font-semibold text-white">
-            {player.name || `Player ${index + 1}`}: {scores[player.id] || 0}
+          <span className="absolute inset-0 flex items-center px-1 text-xs font-semibold text-white">
+            {player.name || `Player ${index + 1}`}
           </span>
         </div>
       ))}
