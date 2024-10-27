@@ -8,6 +8,7 @@ import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 import * as msgpack from "msgpack-lite";
 import HowToPlayModal from "../howToPlayModal";
 import GameOverModal from "../gameOverModal";
+import ProgressBar from "../progressBar";
 
 let socket;
 
@@ -26,12 +27,12 @@ export default function GameRoom({ params }) {
   const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const [score, setScore] = useState(null);
   const [currentRound, setCurrentRound] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [smorePositions, setSmorePositions] = useState([]);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [scores, setScores] = useState({});
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -59,12 +60,8 @@ export default function GameRoom({ params }) {
       setPlayersPos(data.playersPosition);
       setCurrentRound(data.currentRound);
       setCurrentTurn(data.currentTurn);
+      setScores(data.scores);
       setRole(data.players.find((player) => player.id === socket.id).role);
-      if (data.players.length === 2) {
-        if (data.currentRound === 1 && data.currentTurn === 1) {
-          setScoreboard(data.settings.totalRounds, data.players);
-        }
-      }
 
       if (data.roomOwner === socket.id) {
         setIsRoomOwner(true);
@@ -103,9 +100,6 @@ export default function GameRoom({ params }) {
       setGameSettings(settings);
       setMazeMap(mazeMap);
       setSmorePositions(mazeMap.smorePositions || []);
-      if (players.length === 2 && settings.totalRounds) {
-        setScoreboard(settings.totalRounds, players);
-      }
     });
 
     socket.on("playerMove", (encodedData) => {
@@ -123,7 +117,7 @@ export default function GameRoom({ params }) {
         return;
       }
       console.log("Decoded data:", decodedData);
-      setScore(decodedData.scores);
+      setScores(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
 
@@ -190,64 +184,8 @@ export default function GameRoom({ params }) {
     socket.emit("playerMove", { roomId, row, col });
   };
 
-  const setScoreboard = (totalRounds, players) => {
-    const scoreboard = {};
-    for (let i = 1; i <= totalRounds; i++) {
-      scoreboard[i] = {
-        1: { [players[0].id]: 0, [players[1].id]: 0 },
-        2: { [players[0].id]: 0, [players[1].id]: 0 },
-      };
-    }
-    setScore(scoreboard);
-  };
-
   const handleNextTurn = () => {
     socket.emit("nextTurn", { roomId });
-  };
-
-  // Update the renderScoreboard function
-  const renderScoreboard = () => {
-    if (!score || (players && players.length !== 2)) return null;
-
-    return (
-      <table className="scoreboard text-xs w-full">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="p-1 border">Round</th>
-            <th className="p-1 border">Turn 1</th>
-            <th className="p-1 border">Turn 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(score).map(([round, turns]) => (
-            <tr key={round}>
-              <td className="p-1 border text-center">{round}</td>
-              <td className="p-1 border text-center">
-                {renderTurnResult(turns[1])}
-              </td>
-              <td className="p-1 border text-center">
-                {renderTurnResult(turns[2])}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
-  const renderTurnResult = (turn) => {
-    const player1Score = turn[players[0].id];
-    const player2Score = turn[players[1].id];
-
-    if (player1Score === -1 && player2Score === -1) {
-      return "T";
-    } else if (player1Score > 0) {
-      return "P1";
-    } else if (player2Score > 0) {
-      return "P2";
-    } else {
-      return "";
-    }
   };
 
   const handlePlayAgain = () => {
@@ -271,13 +209,24 @@ export default function GameRoom({ params }) {
           )}
       </div>
       {serverConnected && (
-        <GameSettings
-          isRoomOwner={isRoomOwner}
-          settingsData={settingsData}
-          gameStatus={gameStatus}
-          role={role}
-          handleSettingsChange={handleSettingsChange}
-        />
+        <>
+          <GameSettings
+            isRoomOwner={isRoomOwner}
+            settingsData={settingsData}
+            gameStatus={gameStatus}
+            role={role}
+            handleSettingsChange={handleSettingsChange}
+          />
+          {players.length === 2 && settingsData && (
+            <div className="mt-2">
+              <ProgressBar
+                players={players}
+                scores={scores}
+                totalRounds={settingsData.totalRounds}
+              />
+            </div>
+          )}
+        </>
       )}
       <div className="mt-4">
         {/* Game Board */}
@@ -334,14 +283,6 @@ export default function GameRoom({ params }) {
             </button>
           )}
         </div>
-
-        {/* Scoreboard */}
-        {players.length === 2 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-bold mb-2">Scoreboard</h3>
-            {renderScoreboard()}
-          </div>
-        )}
       </div>
 
       {showLoader && (
