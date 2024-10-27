@@ -24,9 +24,9 @@ export default function GameSettings({
   }
 
   const settingsFields = [
-    { name: "timeLimit", label: "Time Limit", optionsKey: "timeLimits" },
-    { name: "smoreCount", label: "S'more Count", optionsKey: "smoreCounts" },
-    { name: "totalRounds", label: "Total Rounds", optionsKey: "totalRounds" },
+    { name: "timeLimit", label: "Time", optionsKey: "timeLimits" },
+    { name: "smoreCount", label: "S'more(s)", optionsKey: "smoreCounts" },
+    { name: "totalRounds", label: "Round(s)", optionsKey: "totalRounds" },
     { name: "maze", label: "Maze", optionsKey: "maze" },
     { name: "role", label: "Your Role", optionsKey: "roles" },
   ];
