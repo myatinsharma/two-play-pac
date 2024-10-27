@@ -16,27 +16,24 @@ const ProgressBar = ({ players, scores, totalRounds }) => {
   };
 
   return (
-    <div className="space-y-1">
+    <div className="flex space-x-2">
       {players.map((player, index) => (
-        <div
-          key={player.id}
-          className="relative h-2 bg-gray-200 overflow-hidden"
-        >
-          <div className="absolute inset-0 flex">
-            {renderDivisions(totalRounds)}
+        <div key={player.id} className="w-1/2">
+          <div className="relative h-2 bg-gray-200 overflow-hidden">
+            <div className="absolute inset-0 flex">
+              {renderDivisions(totalRounds)}
+            </div>
+            <div
+              className="h-full bg-orange-500 transition-all duration-300 ease-in-out"
+              style={{
+                width: `${getWidth(scores[player.id] || 0)}%`,
+                ...(index === 1 ? { marginLeft: "auto", float: "right" } : {}),
+              }}
+            ></div>
+            <span className="absolute inset-0 flex items-center px-1 text-[8px] font-semibold text-white">
+              {player.name || `Player ${index + 1}`}
+            </span>
           </div>
-          <div
-            className={`h-full ${
-              index === 0 ? "bg-blue-500" : "bg-red-500"
-            } transition-all duration-300 ease-in-out`}
-            style={{
-              width: `${getWidth(scores[player.id] || 0)}%`,
-              ...(index === 1 ? { marginLeft: "auto", float: "right" } : {}),
-            }}
-          ></div>
-          <span className="absolute inset-0 flex items-center px-1 text-xs font-semibold text-white">
-            {player.name || `Player ${index + 1}`}
-          </span>
         </div>
       ))}
     </div>
