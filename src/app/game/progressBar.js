@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProgressBar = ({ players, scores, totalRounds }) => {
+const ProgressBar = ({ players, scores, totalRounds, currentUserId }) => {
   const getWidth = (score) => {
     return (score / totalRounds) * 100;
   };
@@ -31,7 +31,7 @@ const ProgressBar = ({ players, scores, totalRounds }) => {
               }}
             ></div>
             <span className="absolute inset-0 flex items-center px-1 text-[8px] font-semibold text-white">
-              {player.name || `Player ${index + 1}`}
+              {player.id === currentUserId ? "You" : player.name || `Player ${index + 1}`}
             </span>
           </div>
         </div>

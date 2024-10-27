@@ -223,6 +223,7 @@ export default function GameRoom({ params }) {
                 players={players}
                 scores={scores}
                 totalRounds={settingsData.totalRounds}
+                currentUserId={socket.id}
               />
             </div>
           )}
