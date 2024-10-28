@@ -31,8 +31,14 @@ const ProgressBar = ({ players, scores, totalRounds, currentUserId }) => {
               }}
             ></div>
           </div>
-          <div className={`mt-1 text-[8px] font-semibold text-black ${index === 1 ? 'text-right' : 'text-left'}`}>
-            {player.id === currentUserId ? "You" : player.name || `Player ${index + 1}`}
+          <div
+            className={`text-[10px] tracking-wider font-medium text-black ${
+              index === 1 ? "text-right" : "text-left"
+            }`}
+          >
+            {player.id === currentUserId
+              ? "You"
+              : player.name || `Player ${index + 1}`}
           </div>
         </div>
       ))}

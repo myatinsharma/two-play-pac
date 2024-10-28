@@ -188,7 +188,7 @@ function GameBoard({
         onClick={toggleArrows}
         className="mt-4 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
       >
-        {showArrows ? "Hide" : "Show"} Arrows
+        {showArrows ? "Hide" : "Show"} Controls
       </button>
       {showArrows && (
         <div className="mt-4 flex flex-col items-center">

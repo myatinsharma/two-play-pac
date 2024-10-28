@@ -272,7 +272,7 @@ export default function GameRoom({ params }) {
             players.length === 2 &&
             !isRoomOwner && (
               <p className="text-sm font-semibold text-gray-600">
-                Waiting for another player to start...
+                Waiting for room owner to start...
               </p>
             )}
           {gameStatus === GAME_STATUS.TURN_COMPLETED && (
