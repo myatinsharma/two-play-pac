@@ -217,7 +217,12 @@ export default function GameRoom({ params }) {
             role={role}
             handleSettingsChange={handleSettingsChange}
           />
-          {players.length === 2 && settingsData && (
+          {players.length === 2 && 
+           settingsData && 
+           (gameStatus === GAME_STATUS.STARTED || 
+            gameStatus === GAME_STATUS.TURN_STARTED ||
+            gameStatus === GAME_STATUS.TURN_COMPLETED ||
+            gameStatus === GAME_STATUS.GAME_OVER) && (
             <div className="mt-2">
               <ProgressBar
                 players={players}
