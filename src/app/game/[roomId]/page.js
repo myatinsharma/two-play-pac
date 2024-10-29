@@ -8,8 +8,11 @@ import { GAME_STATUS, GAME_STATUS_DESCRIPTION } from "../../constants";
 import * as msgpack from "msgpack-lite";
 import HowToPlayModal from "../howToPlayModal";
 import GameOverModal from "../gameOverModal";
+import ProgressBar from "../progressBar";
 
 let socket;
+
+const ROLE_NOTIFICATION_DURATION = 1500;
 
 export default function GameRoom({ params }) {
   const { roomId } = params;
@@ -26,12 +29,13 @@ export default function GameRoom({ params }) {
   const [mazeMap, setMazeMap] = useState(null);
   const [isRoomOwner, setIsRoomOwner] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const [score, setScore] = useState(null);
   const [currentRound, setCurrentRound] = useState(0);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [smorePositions, setSmorePositions] = useState([]);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [scores, setScores] = useState({});
+  const [roleNotification, setRoleNotification] = useState(null);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -59,11 +63,16 @@ export default function GameRoom({ params }) {
       setPlayersPos(data.playersPosition);
       setCurrentRound(data.currentRound);
       setCurrentTurn(data.currentTurn);
-      setRole(data.players.find((player) => player.id === socket.id).role);
-      if (data.players.length === 2) {
-        if (data.currentRound === 1 && data.currentTurn === 1) {
-          setScoreboard(data.settings.totalRounds, data.players);
-        }
+      setScores(data.scores);
+      const newRole = data.players.find(
+        (player) => player.id === socket.id
+      ).role;
+      if (newRole !== role) {
+        setRole(newRole);
+        setRoleNotification(
+          newRole === 2 ? "You are Camper now!" : "You are Bear now!"
+        );
+        setTimeout(() => setRoleNotification(null), ROLE_NOTIFICATION_DURATION);
       }
 
       if (data.roomOwner === socket.id) {
@@ -82,7 +91,14 @@ export default function GameRoom({ params }) {
 
     socket.on("roleUpdate", ({ players }) => {
       setPlayers(players);
-      setRole(players.find((player) => player.id === socket.id).role);
+      const newRole = players.find((player) => player.id === socket.id).role;
+      if (newRole !== role) {
+        setRole(newRole);
+        setRoleNotification(
+          newRole === 2 ? "You are Camper now!" : "You are Bear now!"
+        );
+        setTimeout(() => setRoleNotification(null), ROLE_NOTIFICATION_DURATION);
+      }
     });
 
     socket.on("startGame", ({ status }) => {
@@ -103,9 +119,6 @@ export default function GameRoom({ params }) {
       setGameSettings(settings);
       setMazeMap(mazeMap);
       setSmorePositions(mazeMap.smorePositions || []);
-      if (players.length === 2 && settings.totalRounds) {
-        setScoreboard(settings.totalRounds, players);
-      }
     });
 
     socket.on("playerMove", (encodedData) => {
@@ -123,7 +136,7 @@ export default function GameRoom({ params }) {
         return;
       }
       console.log("Decoded data:", decodedData);
-      setScore(decodedData.scores);
+      setScores(decodedData.scores);
       setPlayersPos(decodedData.playersPosition);
       setGameStatus(decodedData.gameStatus);
 
@@ -190,64 +203,8 @@ export default function GameRoom({ params }) {
     socket.emit("playerMove", { roomId, row, col });
   };
 
-  const setScoreboard = (totalRounds, players) => {
-    const scoreboard = {};
-    for (let i = 1; i <= totalRounds; i++) {
-      scoreboard[i] = {
-        1: { [players[0].id]: 0, [players[1].id]: 0 },
-        2: { [players[0].id]: 0, [players[1].id]: 0 },
-      };
-    }
-    setScore(scoreboard);
-  };
-
   const handleNextTurn = () => {
     socket.emit("nextTurn", { roomId });
-  };
-
-  // Update the renderScoreboard function
-  const renderScoreboard = () => {
-    if (!score || (players && players.length !== 2)) return null;
-
-    return (
-      <table className="scoreboard text-xs w-full">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="p-1 border">Round</th>
-            <th className="p-1 border">Turn 1</th>
-            <th className="p-1 border">Turn 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(score).map(([round, turns]) => (
-            <tr key={round}>
-              <td className="p-1 border text-center">{round}</td>
-              <td className="p-1 border text-center">
-                {renderTurnResult(turns[1])}
-              </td>
-              <td className="p-1 border text-center">
-                {renderTurnResult(turns[2])}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
-  const renderTurnResult = (turn) => {
-    const player1Score = turn[players[0].id];
-    const player2Score = turn[players[1].id];
-
-    if (player1Score === -1 && player2Score === -1) {
-      return "T";
-    } else if (player1Score > 0) {
-      return "P1";
-    } else if (player2Score > 0) {
-      return "P2";
-    } else {
-      return "";
-    }
   };
 
   const handlePlayAgain = () => {
@@ -262,25 +219,63 @@ export default function GameRoom({ params }) {
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Room: {roomId}</h2>
-        {(gameStatus === GAME_STATUS.STARTED ||
-          gameStatus === GAME_STATUS.TURN_STARTED) &&
-          timeRemaining !== null && (
-            <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded">
-              Time Remaining: {timeRemaining}s
-            </div>
-          )}
       </div>
       {serverConnected && (
-        <GameSettings
-          isRoomOwner={isRoomOwner}
-          settingsData={settingsData}
-          gameStatus={gameStatus}
-          role={role}
-          handleSettingsChange={handleSettingsChange}
-        />
+        <>
+          <GameSettings
+            isRoomOwner={isRoomOwner}
+            settingsData={settingsData}
+            gameStatus={gameStatus}
+            role={role}
+            handleSettingsChange={handleSettingsChange}
+          />
+          {players.length === 2 &&
+            settingsData &&
+            (gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED ||
+              gameStatus === GAME_STATUS.TURN_COMPLETED ||
+              gameStatus === GAME_STATUS.GAME_OVER) && (
+              <div className="mt-2">
+                <ProgressBar
+                  players={players}
+                  scores={scores}
+                  totalRounds={settingsData.totalRounds}
+                  currentUserId={socket.id}
+                />
+              </div>
+            )}
+          {(gameStatus === GAME_STATUS.STARTED ||
+            gameStatus === GAME_STATUS.TURN_STARTED) &&
+            timeRemaining !== null && (
+              <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded text-center mt-2 mb-4">
+                Time Remaining: {timeRemaining}s
+              </div>
+            )}
+        </>
       )}
-      <div className="mt-4">
-        {/* Game Board */}
+      <div className="mt-4 relative">
+        {/* Role notification overlay */}
+        {roleNotification && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div
+              className={`animate-fade-in-out px-4 py-2 rounded-lg text-lg font-bold text-center ${
+                roleNotification.includes("Camper")
+                  ? "bg-slate-200 bg-opacity-100 text-red-400"
+                  : "bg-slate-200 bg-opacity-100 text-blue-400"
+              }`}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              {roleNotification}
+            </div>
+          </div>
+        )}
+
+        {/* GameBoard */}
         {(gameStatus === GAME_STATUS.GAME_OVER ||
           gameStatus === GAME_STATUS.TURN_COMPLETED ||
           gameStatus === GAME_STATUS.STARTED ||
@@ -297,7 +292,6 @@ export default function GameRoom({ params }) {
               smorePositions={smorePositions}
             />
           )}
-
         {/* Game controls and status messages */}
         <div className="mt-4">
           {isRoomOwner &&
@@ -322,7 +316,7 @@ export default function GameRoom({ params }) {
             players.length === 2 &&
             !isRoomOwner && (
               <p className="text-sm font-semibold text-gray-600">
-                Waiting for another player to start...
+                Waiting for room owner to start...
               </p>
             )}
           {gameStatus === GAME_STATUS.TURN_COMPLETED && (
@@ -334,14 +328,6 @@ export default function GameRoom({ params }) {
             </button>
           )}
         </div>
-
-        {/* Scoreboard */}
-        {players.length === 2 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-bold mb-2">Scoreboard</h3>
-            {renderScoreboard()}
-          </div>
-        )}
       </div>
 
       {showLoader && (

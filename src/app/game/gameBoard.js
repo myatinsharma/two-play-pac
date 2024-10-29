@@ -137,8 +137,7 @@ function GameBoard({
   };
 
   return (
-    <div className="mt-8">
-      <h3 className="text-xl font-bold mb-4">Game Board</h3>
+    <div className="mt-5">
       <div className="flex justify-center">
         <div
           className="grid gap-0 border border-gray-300"
@@ -189,7 +188,7 @@ function GameBoard({
         onClick={toggleArrows}
         className="mt-4 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
       >
-        {showArrows ? "Hide" : "Show"} Arrows
+        {showArrows ? "Hide" : "Show"} Controls
       </button>
       {showArrows && (
         <div className="mt-4 flex flex-col items-center">
