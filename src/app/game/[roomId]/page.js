@@ -258,11 +258,17 @@ export default function GameRoom({ params }) {
         {roleNotification && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div
-              className={`animate-fade-in-out bg-slate-200 bg-opacity-50 px-4 py-2 rounded-lg text-lg font-bold whitespace-nowrap ${
+              className={`animate-fade-in-out px-4 py-2 rounded-lg text-lg font-bold text-center ${
                 roleNotification.includes("Camper")
-                  ? "text-red-500"
-                  : "text-blue-500"
+                  ? "bg-slate-200 bg-opacity-50 text-red-400"
+                  : "bg-slate-200 bg-opacity-50 text-blue-400"
               }`}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
             >
               {roleNotification}
             </div>
