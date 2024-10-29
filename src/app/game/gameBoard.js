@@ -137,7 +137,7 @@ function GameBoard({
   };
 
   return (
-    <div className="mt-8">
+    <div className="mt-5">
       <div className="flex justify-center">
         <div
           className="grid gap-0 border border-gray-300"

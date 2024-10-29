@@ -200,13 +200,6 @@ export default function GameRoom({ params }) {
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Room: {roomId}</h2>
-        {(gameStatus === GAME_STATUS.STARTED ||
-          gameStatus === GAME_STATUS.TURN_STARTED) &&
-          timeRemaining !== null && (
-            <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded">
-              Time Remaining: {timeRemaining}s
-            </div>
-          )}
       </div>
       {serverConnected && (
         <>
@@ -217,21 +210,28 @@ export default function GameRoom({ params }) {
             role={role}
             handleSettingsChange={handleSettingsChange}
           />
-          {players.length === 2 && 
-           settingsData && 
-           (gameStatus === GAME_STATUS.STARTED || 
-            gameStatus === GAME_STATUS.TURN_STARTED ||
-            gameStatus === GAME_STATUS.TURN_COMPLETED ||
-            gameStatus === GAME_STATUS.GAME_OVER) && (
-            <div className="mt-2">
-              <ProgressBar
-                players={players}
-                scores={scores}
-                totalRounds={settingsData.totalRounds}
-                currentUserId={socket.id}
-              />
-            </div>
-          )}
+          {players.length === 2 &&
+            settingsData &&
+            (gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED ||
+              gameStatus === GAME_STATUS.TURN_COMPLETED ||
+              gameStatus === GAME_STATUS.GAME_OVER) && (
+              <div className="mt-2">
+                <ProgressBar
+                  players={players}
+                  scores={scores}
+                  totalRounds={settingsData.totalRounds}
+                  currentUserId={socket.id}
+                />
+              </div>
+            )}
+          {(gameStatus === GAME_STATUS.STARTED ||
+            gameStatus === GAME_STATUS.TURN_STARTED) &&
+            timeRemaining !== null && (
+              <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded text-center mt-2 mb-4">
+                Time Remaining: {timeRemaining}s
+              </div>
+            )}
         </>
       )}
       <div className="mt-4">
