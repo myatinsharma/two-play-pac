@@ -64,10 +64,14 @@ export default function GameRoom({ params }) {
       setCurrentRound(data.currentRound);
       setCurrentTurn(data.currentTurn);
       setScores(data.scores);
-      const newRole = data.players.find((player) => player.id === socket.id).role;
+      const newRole = data.players.find(
+        (player) => player.id === socket.id
+      ).role;
       if (newRole !== role) {
         setRole(newRole);
-        setRoleNotification(newRole === 2 ? "You are Camper now!" : "You are Bear now!");
+        setRoleNotification(
+          newRole === 2 ? "You are Camper now!" : "You are Bear now!"
+        );
         setTimeout(() => setRoleNotification(null), ROLE_NOTIFICATION_DURATION);
       }
 
@@ -90,7 +94,9 @@ export default function GameRoom({ params }) {
       const newRole = players.find((player) => player.id === socket.id).role;
       if (newRole !== role) {
         setRole(newRole);
-        setRoleNotification(newRole === 2 ? "You are Camper now!" : "You are Bear now!");
+        setRoleNotification(
+          newRole === 2 ? "You are Camper now!" : "You are Bear now!"
+        );
         setTimeout(() => setRoleNotification(null), ROLE_NOTIFICATION_DURATION);
       }
     });
@@ -250,13 +256,19 @@ export default function GameRoom({ params }) {
       <div className="mt-4 relative">
         {/* Role notification overlay */}
         {roleNotification && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="animate-fade-in-out bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg text-lg font-bold">
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div
+              className={`animate-fade-in-out bg-slate-200 bg-opacity-50 px-4 py-2 rounded-lg text-lg font-bold whitespace-nowrap ${
+                roleNotification.includes("Camper")
+                  ? "text-red-500"
+                  : "text-blue-500"
+              }`}
+            >
               {roleNotification}
             </div>
           </div>
         )}
-        
+
         {/* GameBoard */}
         {(gameStatus === GAME_STATUS.GAME_OVER ||
           gameStatus === GAME_STATUS.TURN_COMPLETED ||
@@ -273,7 +285,7 @@ export default function GameRoom({ params }) {
               gameStatus={gameStatus}
               smorePositions={smorePositions}
             />
-        )}
+          )}
         {/* Game controls and status messages */}
         <div className="mt-4">
           {isRoomOwner &&
