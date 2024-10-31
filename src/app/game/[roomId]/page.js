@@ -350,7 +350,7 @@ export default function GameRoom({ params }) {
       )}
 
       {/* Fixed footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 text-xs">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 text-[8px]">
         <div className="container mx-auto flex justify-between items-center">
           <div>
             Server Connected: {serverConnected ? "Yes" : "No"} | Players:{" "}
@@ -359,7 +359,7 @@ export default function GameRoom({ params }) {
           </div>
           <button
             onClick={() => setShowHowToPlay(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center focus:outline-none"
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-4 h-4 flex items-center justify-center focus:outline-none text-[8px]"
           >
             ?
           </button>
