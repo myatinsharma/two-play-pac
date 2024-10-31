@@ -219,6 +219,12 @@ export default function GameRoom({ params }) {
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Room: {roomId}</h2>
+        <button
+          onClick={() => setShowHowToPlay(true)}
+          className="text-blue-500 hover:text-blue-600 text-xs font-semibold focus:outline-none"
+        >
+          How to Play
+        </button>
       </div>
       {serverConnected && (
         <>
@@ -359,9 +365,9 @@ export default function GameRoom({ params }) {
           </div>
           <button
             onClick={() => setShowHowToPlay(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-4 h-4 flex items-center justify-center focus:outline-none text-[8px]"
+            className="text-blue-500 hover:text-blue-600 focus:outline-none"
           >
-            ?
+            How to Play
           </button>
         </div>
       </div>
