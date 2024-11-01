@@ -250,16 +250,21 @@ export default function GameRoom({ params }) {
                 />
               </div>
             )}
-          {(gameStatus === GAME_STATUS.STARTED ||
-            gameStatus === GAME_STATUS.TURN_STARTED) &&
-            timeRemaining !== null && (
-              <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded text-center mt-2 mb-4">
-                Time Remaining: {timeRemaining}s
-              </div>
-            )}
+          {/* Timer container - always present to maintain layout */}
+          <div className="h-[34px] mt-2 mb-0">
+            {" "}
+            {/* Fixed height container */}
+            {(gameStatus === GAME_STATUS.STARTED ||
+              gameStatus === GAME_STATUS.TURN_STARTED) &&
+              timeRemaining !== null && (
+                <div className="text-xs bg-yellow-100 border border-yellow-400 text-yellow-700 px-2 py-1 rounded text-center">
+                  Time Remaining: {timeRemaining}s
+                </div>
+              )}
+          </div>
         </>
       )}
-      <div className="mt-4 relative">
+      <div className="mt-0 relative">
         {/* Role notification overlay */}
         {roleNotification && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
