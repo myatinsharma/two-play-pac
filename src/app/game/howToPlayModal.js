@@ -47,12 +47,11 @@ export default function HowToPlayModal({ onClose }) {
               </li>
               <li>The Camper collects s'mores by moving onto their squares.</li>
               <li>
-                The Bear tries to move onto the same square as the Camper to
-                catch them.
+                The Bear tries to move onto the same square as the Camper to catch them.
               </li>
               <li>
-                The game ends when all s'mores are collected, the Camper is
-                caught, or the time limit is reached.
+                The game ends when all s'mores are collected, the Camper is caught, or
+                the time limit is reached.
               </li>
             </ul>
           </section>
@@ -62,14 +61,12 @@ export default function HowToPlayModal({ onClose }) {
             </h3>
             <ul className="list-disc pl-5 text-gray-700 space-y-2">
               <li>
-                Camper wins if all s'mores are collected before being caught or
-                time runs out.
+                Camper wins if all s'mores are collected before being caught.
               </li>
               <li>
-                Bear wins if they catch the Camper before all s'mores are
-                collected.
+                Bear wins if they catch the Camper before all s'mores are collected.
               </li>
-              <li>If time runs out, the player with the most points wins.</li>
+              <li>If time runs out, no points are given for that round.</li>
             </ul>
           </section>
         </div>
