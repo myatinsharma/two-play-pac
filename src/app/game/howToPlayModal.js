@@ -50,6 +50,9 @@ export default function HowToPlayModal({ onClose }) {
                 The Bear tries to move onto the same square as the Camper to catch them.
               </li>
               <li>
+                🐻 Watch out! Bears can't handle sugar - getting next to s'mores is deadly for them! If the bear gets adjacent to a s'more, the camper wins!
+              </li>
+              <li>
                 The game ends when all s'mores are collected, the Camper is caught, or
                 the time limit is reached.
               </li>
