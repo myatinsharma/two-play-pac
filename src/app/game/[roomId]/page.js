@@ -301,22 +301,15 @@ export default function GameRoom({ params }) {
               handlePlayerMove={handlePlayerMove}
               gameStatus={gameStatus}
               smorePositions={smorePositions}
+              handleNextTurn={handleNextTurn}
+              startGame={startGame}
+              isRoomOwner={isRoomOwner}
+              settingsData={settingsData}
+              players={players}
             />
           )}
         {/* Game controls and status messages */}
         <div className="mt-4 flex justify-center">
-          {isRoomOwner &&
-            (gameStatus === GAME_STATUS.NOT_STARTED ||
-              gameStatus === GAME_STATUS.TURN_STARTED) &&
-            settingsData &&
-            players.length === 2 && (
-              <button
-                onClick={startGame}
-                className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
-              >
-                Start Game
-              </button>
-            )}
           {gameStatus === GAME_STATUS.NOT_STARTED && players.length === 1 && (
             <p className="text-sm font-semibold text-gray-600">
               Waiting for another user...
@@ -330,14 +323,6 @@ export default function GameRoom({ params }) {
                 Waiting for room owner to start...
               </p>
             )}
-          {gameStatus === GAME_STATUS.TURN_COMPLETED && (
-            <button
-              onClick={handleNextTurn}
-              className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded"
-            >
-              Next Turn
-            </button>
-          )}
         </div>
       </div>
 
@@ -380,6 +365,18 @@ export default function GameRoom({ params }) {
       {showHowToPlay && (
         <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
       )}
+
+      {isRoomOwner &&
+        gameStatus === GAME_STATUS.NOT_STARTED &&
+        settingsData &&
+        players.length === 2 && (
+          <button
+            onClick={startGame}
+            className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
+          >
+            Start Game
+          </button>
+        )}
     </div>
   );
 }

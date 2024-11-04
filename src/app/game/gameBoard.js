@@ -8,10 +8,15 @@ function GameBoard({
   handlePlayerMove,
   gameStatus,
   smorePositions,
+  handleNextTurn,
+  startGame,
+  isRoomOwner,
+  settingsData,
+  players,
 }) {
   const [currentDirection, setCurrentDirection] = useState(null);
   const [lastMoveTime, setLastMoveTime] = useState(0);
-  const [showArrows, setShowArrows] = useState(false);
+  const [showArrows, setShowArrows] = useState(true);
 
   // Add a new state to keep track of eaten smores
   const [eatenSmores, setEatenSmores] = useState([]);
@@ -184,12 +189,40 @@ function GameBoard({
           )}
         </div>
       </div>
-      <button
-        onClick={toggleArrows}
-        className="mt-4 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
-      >
-        {showArrows ? "Hide" : "Show"} Controls
-      </button>
+      <div className="mt-4 grid grid-cols-2 items-center w-full max-w-md mx-auto">
+        {/* Left side - Controls button */}
+        <div className="justify-self-end pr-2">
+          <button
+            onClick={toggleArrows}
+            className="bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
+          >
+            {showArrows ? "Hide" : "Show"} Controls
+          </button>
+        </div>
+
+        {/* Right side - Game control buttons */}
+        <div className="justify-self-start pl-2">
+          {gameStatus === GAME_STATUS.TURN_COMPLETED && (
+            <button
+              onClick={handleNextTurn}
+              className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded"
+            >
+              Next Turn
+            </button>
+          )}
+          {isRoomOwner &&
+            gameStatus === GAME_STATUS.TURN_STARTED &&
+            settingsData &&
+            players.length === 2 && (
+              <button
+                onClick={startGame}
+                className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
+              >
+                Start Game
+              </button>
+            )}
+        </div>
+      </div>
       {showArrows && (
         <div className="mt-4 flex flex-col items-center">
           <button
