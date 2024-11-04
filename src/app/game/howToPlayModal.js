@@ -51,6 +51,19 @@ export default function HowToPlayModal({ onClose }) {
               </li>
               <li>
                 🐻 Watch out! Bears can't handle sugar - getting next to s'mores is deadly for them! If the bear gets adjacent to a s'more, the camper wins!
+                <div className="grid grid-cols-3 grid-rows-3 gap-[2px] w-fit mx-auto mt-2">
+                    <div className="h-[20px] w-[20px]"></div>
+                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
+                    <div className="h-[20px] w-[20px]"></div>
+                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
+                    <div className="h-[20px] w-[20px] bg-[#fff8dc] flex items-center justify-center">
+                      <div className="w-[12px] h-[12px] rounded-full bg-yellow-400"></div>
+                    </div>
+                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
+                    <div className="h-[20px] w-[20px]"></div>
+                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
+                    <div className="h-[20px] w-[20px]"></div>
+                </div>
               </li>
               <li>
                 The game ends when all s'mores are collected, the Camper is caught, or
