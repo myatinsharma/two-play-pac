@@ -304,7 +304,7 @@ export default function GameRoom({ params }) {
             />
           )}
         {/* Game controls and status messages */}
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center">
           {isRoomOwner &&
             (gameStatus === GAME_STATUS.NOT_STARTED ||
               gameStatus === GAME_STATUS.TURN_STARTED) &&
