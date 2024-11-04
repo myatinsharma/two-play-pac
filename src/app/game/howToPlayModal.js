@@ -1,10 +1,15 @@
 export default function HowToPlayModal({ onClose }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-3xl font-bold mb-6 text-center text-green-800">
-          How to Play
-        </h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="relative bg-white rounded-lg p-6 max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
+        <button 
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          aria-label="Close modal"
+        >
+          ✖️
+        </button>
+        <h2 className="text-3xl font-bold mb-4 text-green-800 text-center">How to Play</h2>
         <div className="space-y-6">
           <section>
             <h3 className="text-2xl font-semibold mb-2 text-green-700">
