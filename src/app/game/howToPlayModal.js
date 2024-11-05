@@ -2,14 +2,16 @@ export default function HowToPlayModal({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="relative bg-white rounded-lg p-6 max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           aria-label="Close modal"
         >
           ✖️
         </button>
-        <h2 className="text-3xl font-bold mb-4 text-green-800 text-center">How to Play</h2>
+        <h2 className="text-3xl font-bold mb-4 text-green-800 text-center">
+          How to Play
+        </h2>
         <div className="space-y-6">
           <section>
             <h3 className="text-2xl font-semibold mb-2 text-green-700">
@@ -52,27 +54,17 @@ export default function HowToPlayModal({ onClose }) {
               </li>
               <li>The Camper collects s'mores by moving onto their squares.</li>
               <li>
-                The Bear tries to move onto the same square as the Camper to catch them.
+                The Bear tries to move onto the same square as the Camper to
+                catch them.
               </li>
               <li>
-                🐻 Watch out! Bears can't handle sugar - getting next to s'mores is deadly for them! If the bear gets adjacent to a s'more, the camper wins!
-                <div className="grid grid-cols-3 grid-rows-3 gap-[2px] w-fit mx-auto mt-2">
-                    <div className="h-[20px] w-[20px]"></div>
-                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
-                    <div className="h-[20px] w-[20px]"></div>
-                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
-                    <div className="h-[20px] w-[20px] bg-[#fff8dc] flex items-center justify-center">
-                      <div className="w-[12px] h-[12px] rounded-full bg-yellow-400"></div>
-                    </div>
-                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
-                    <div className="h-[20px] w-[20px]"></div>
-                    <div className="h-[20px] w-[20px] bg-[#ffcccc] flex items-center justify-center text-red-500">✖️</div>
-                    <div className="h-[20px] w-[20px]"></div>
-                </div>
+                🐻 Bears can move anywhere, but if they eat a s'more, the sugar in it 
+                is fatal to them - so moving onto a s'more square means the bear loses 
+                and the camper wins!
               </li>
               <li>
-                The game ends when all s'mores are collected, the Camper is caught, or
-                the time limit is reached.
+                The game ends when all s'mores are collected, the Camper is
+                caught, or the time limit is reached.
               </li>
             </ul>
           </section>
@@ -85,7 +77,8 @@ export default function HowToPlayModal({ onClose }) {
                 Camper wins if all s'mores are collected before being caught.
               </li>
               <li>
-                Bear wins if they catch the Camper before all s'mores are collected.
+                Bear wins if they catch the Camper before all s'mores are
+                collected.
               </li>
               <li>If time runs out, no points are given for that round.</li>
             </ul>
