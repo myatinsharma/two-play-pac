@@ -189,9 +189,9 @@ function GameBoard({
           )}
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 items-center w-full max-w-md mx-auto">
+      <div className="mt-4 grid grid-cols-3 items-center w-full max-w-md mx-auto">
         {/* Left side - Controls button */}
-        <div className="justify-self-end pr-2">
+        <div className="justify-self-end">
           <button
             onClick={toggleArrows}
             className={`hover:opacity-80 text-white text-xs font-semibold py-1 px-2 rounded ${
@@ -203,8 +203,11 @@ function GameBoard({
           </button>
         </div>
 
+        {/* Empty middle column for spacing */}
+        <div></div>
+
         {/* Right side - Game control buttons */}
-        <div className="justify-self-start pl-2">
+        <div className="justify-self-start">
           {gameStatus === GAME_STATUS.TURN_COMPLETED && (
             <button
               onClick={handleNextTurn}
