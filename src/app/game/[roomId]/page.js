@@ -397,12 +397,14 @@ export default function GameRoom({ params }) {
         gameStatus === GAME_STATUS.NOT_STARTED &&
         settingsData &&
         players.length === 2 && (
-          <button
-            onClick={startGame}
-            className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-2 rounded"
-          >
-            Start Game
-          </button>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={startGame}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm"
+            >
+              Start Game
+            </button>
+          </div>
         )}
       <PrivacyPolicyModal
         isOpen={showPrivacyPolicy}
