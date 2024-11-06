@@ -9,11 +9,12 @@ import * as msgpack from "msgpack-lite";
 import HowToPlayModal from "../howToPlayModal";
 import GameOverModal from "../gameOverModal";
 import ProgressBar from "../progressBar";
+import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 
 let socket;
 
 const ROLE_NOTIFICATION_DURATION = 1500;
-const FIRST_VISIT_KEY = 'hasVisitedBefore';
+const FIRST_VISIT_KEY = "hasVisitedBefore";
 
 export default function GameRoom({ params }) {
   const { roomId } = params;
@@ -37,6 +38,7 @@ export default function GameRoom({ params }) {
   const [showGameOverModal, setShowGameOverModal] = useState(false);
   const [scores, setScores] = useState({});
   const [roleNotification, setRoleNotification] = useState(null);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
@@ -178,7 +180,7 @@ export default function GameRoom({ params }) {
     const hasVisitedBefore = localStorage.getItem(FIRST_VISIT_KEY);
     if (!hasVisitedBefore) {
       setShowHowToPlay(true);
-      localStorage.setItem(FIRST_VISIT_KEY, 'true');
+      localStorage.setItem(FIRST_VISIT_KEY, "true");
     }
   }, []);
 
@@ -226,15 +228,17 @@ export default function GameRoom({ params }) {
 
   const handleCloseHowToPlay = () => {
     setShowHowToPlay(false);
-    localStorage.setItem(FIRST_VISIT_KEY, 'true');
+    localStorage.setItem(FIRST_VISIT_KEY, "true");
   };
 
   return (
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">
-          Room: {roomId} 
-          <span className="text-[10px] font-normal text-gray-500 ml-2">(for the US only)</span>
+          Room: {roomId}
+          <span className="text-[10px] font-normal text-gray-500 ml-2">
+            (for the US only)
+          </span>
         </h2>
         <button
           onClick={() => setShowHowToPlay(true)}
@@ -370,18 +374,24 @@ export default function GameRoom({ params }) {
             {players.length} | Status: {GAME_STATUS_DESCRIPTION[gameStatus]} |
             Current Round: {currentRound} | Current Turn: {currentTurn}
           </div>
-          <button
-            onClick={() => setShowHowToPlay(true)}
-            className="text-blue-500 hover:text-blue-600 focus:outline-none"
-          >
-            How to Play
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowPrivacyPolicy(true)}
+              className="text-blue-500 hover:text-blue-600 focus:outline-none"
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => setShowHowToPlay(true)}
+              className="text-blue-500 hover:text-blue-600 focus:outline-none"
+            >
+              How to Play
+            </button>
+          </div>
         </div>
       </div>
 
-      {showHowToPlay && (
-        <HowToPlayModal onClose={handleCloseHowToPlay} />
-      )}
+      {showHowToPlay && <HowToPlayModal onClose={handleCloseHowToPlay} />}
 
       {isRoomOwner &&
         gameStatus === GAME_STATUS.NOT_STARTED &&
@@ -394,6 +404,10 @@ export default function GameRoom({ params }) {
             Start Game
           </button>
         )}
+      <PrivacyPolicyModal
+        isOpen={showPrivacyPolicy}
+        onClose={() => setShowPrivacyPolicy(false)}
+      />
     </div>
   );
 }
