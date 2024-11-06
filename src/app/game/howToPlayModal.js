@@ -58,7 +58,7 @@ export default function HowToPlayModal({ onClose }) {
                 catch them.
               </li>
               <li>
-                🐻 If Bear eats a s'more, the sugar will kill the bear and the
+                If Bear eats a s'more, the sugar will kill the bear and the
                 camper wins!
               </li>
               <li>
