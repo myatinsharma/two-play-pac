@@ -48,10 +48,6 @@ export default function HowToPlayModal({ onClose }) {
               Gameplay
             </h3>
             <ul className="list-disc pl-5 text-gray-700 space-y-2">
-              <li>
-                Players take turns moving one square at a time (up, down, left,
-                or right).
-              </li>
               <li>The Camper collects s'mores by moving onto their squares.</li>
               <li>
                 The Bear tries to move onto the same square as the Camper to
@@ -62,7 +58,7 @@ export default function HowToPlayModal({ onClose }) {
                 camper wins!
               </li>
               <li>
-                The game ends when all s'mores are collected, the Camper is
+                The turn ends when all s'mores are collected, the Camper is
                 caught, or the time limit is reached.
               </li>
             </ul>
