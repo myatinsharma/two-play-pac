@@ -194,9 +194,12 @@ function GameBoard({
         <div className="justify-self-end pr-2">
           <button
             onClick={toggleArrows}
-            className="bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-1 px-2 rounded"
+            className={`hover:opacity-80 text-white text-xs font-semibold py-1 px-2 rounded ${
+              showArrows ? "bg-gray-300" : "bg-blue-500"
+            }`}
+            title={showArrows ? "Hide Controls" : "Show Controls"}
           >
-            {showArrows ? "Hide" : "Show"} Controls
+            ◀ ▶
           </button>
         </div>
 

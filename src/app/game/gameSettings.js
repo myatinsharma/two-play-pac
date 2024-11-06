@@ -82,7 +82,7 @@ export default function GameSettings({
                     value={option.value}
                     className={setting.name === "role" ? "bg-yellow-100" : ""}
                   >
-                    {option.label}
+                    {option.label} {setting.name === "role" ? (option.value === 1 ? "🟦" : option.value === 2 ? "🟥" : "") : ""}
                   </option>
                 ))}
               </select>

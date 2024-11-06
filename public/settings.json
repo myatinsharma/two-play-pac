@@ -19,11 +19,12 @@
       { "value": 5, "label": "5" }
     ],
     "roles": [
-      { "value": 1, "label": "Bear (Blue)" },
-      { "value": 2, "label": "Camper (Red)" }
+      { "value": 1, "label": "Bear" },
+      { "value": 2, "label": "Camper" }
     ],
     "maze": [
-      { "value": 1, "label": "Maze 1" }
+      { "value": 1, "label": "Maze 1" },
+      { "value": 2, "label": "Maze 2" }
     ]
   }
   

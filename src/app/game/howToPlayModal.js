@@ -58,9 +58,7 @@ export default function HowToPlayModal({ onClose }) {
                 catch them.
               </li>
               <li>
-                🐻 Bears can move anywhere, but if they eat a s'more, the sugar in it 
-                is fatal to them - so moving onto a s'more square means the bear loses 
-                and the camper wins!
+                🐻 If Bear eats a s'more, the sugar will kill the bear and the camper wins!
               </li>
               <li>
                 The game ends when all s'mores are collected, the Camper is
