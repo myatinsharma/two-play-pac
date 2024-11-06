@@ -191,7 +191,7 @@ function GameBoard({
       </div>
       <div className="mt-4 grid grid-cols-3 items-center w-full max-w-md mx-auto">
         {/* Left side - Controls button */}
-        <div className="justify-self-end">
+        <div className="justify-self-end pr-7">
           <button
             onClick={toggleArrows}
             className={`hover:opacity-80 text-white text-xs font-semibold py-1 px-2 rounded ${
