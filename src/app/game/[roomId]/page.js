@@ -234,17 +234,18 @@ export default function GameRoom({ params }) {
   return (
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">
-          Room: {roomId}
+        <h2 className="text-sm font-bold">{roomId}</h2>
+        <h1 className="text-xl font-bold text-center text-blue-600">
+          Camper & Bear
           <span className="text-[10px] font-normal text-gray-500 ml-2">
-            (for the US only)
+            (US only)
           </span>
-        </h2>
+        </h1>
         <button
           onClick={() => setShowHowToPlay(true)}
-          className="text-blue-500 hover:text-blue-600 text-xs font-semibold focus:outline-none"
+          className="w-6 h-6 rounded-full border border-blue-500 flex items-center justify-center text-blue-500 hover:bg-blue-100 text-xs font-semibold focus:outline-none"
         >
-          How to Play
+          ?
         </button>
       </div>
       {serverConnected && (
