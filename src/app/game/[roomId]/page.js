@@ -13,6 +13,7 @@ import ProgressBar from "../progressBar";
 let socket;
 
 const ROLE_NOTIFICATION_DURATION = 1500;
+const FIRST_VISIT_KEY = 'hasVisitedBefore';
 
 export default function GameRoom({ params }) {
   const { roomId } = params;
@@ -173,6 +174,14 @@ export default function GameRoom({ params }) {
     };
   }, [roomId]);
 
+  useEffect(() => {
+    const hasVisitedBefore = localStorage.getItem(FIRST_VISIT_KEY);
+    if (!hasVisitedBefore) {
+      setShowHowToPlay(true);
+      localStorage.setItem(FIRST_VISIT_KEY, 'true');
+    }
+  }, []);
+
   const handleSettingsChange = (event) => {
     if (
       gameStatus === GAME_STATUS.STARTED ||
@@ -215,10 +224,18 @@ export default function GameRoom({ params }) {
     setShowGameOverModal(false);
   };
 
+  const handleCloseHowToPlay = () => {
+    setShowHowToPlay(false);
+    localStorage.setItem(FIRST_VISIT_KEY, 'true');
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 pb-16">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Room: {roomId}</h2>
+        <h2 className="text-xl font-bold">
+          Room: {roomId} 
+          <span className="text-[10px] font-normal text-gray-500 ml-2">(for the US only)</span>
+        </h2>
         <button
           onClick={() => setShowHowToPlay(true)}
           className="text-blue-500 hover:text-blue-600 text-xs font-semibold focus:outline-none"
@@ -363,7 +380,7 @@ export default function GameRoom({ params }) {
       </div>
 
       {showHowToPlay && (
-        <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
+        <HowToPlayModal onClose={handleCloseHowToPlay} />
       )}
 
       {isRoomOwner &&

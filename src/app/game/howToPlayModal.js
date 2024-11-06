@@ -18,10 +18,10 @@ export default function HowToPlayModal({ onClose }) {
               Objective
             </h3>
             <p className="text-gray-700">
-              The game is played between two players: a Camper and a Bear. The
-              Camper's goal is to collect all the s'mores on the board, while
-              the Bear tries to catch the Camper before all s'mores are
-              collected.
+              The game is played between two players: a Camper 🟥 and a Bear 🟦.
+              The Camper's goal is to collect all the s'mores{" "}
+              <span className="text-[9px]">🟡</span> on the board, while the
+              Bear tries to catch the Camper before all s'mores are collected.
             </p>
           </section>
           <section>
@@ -30,8 +30,8 @@ export default function HowToPlayModal({ onClose }) {
             </h3>
             <ul className="list-disc pl-5 text-gray-700 space-y-2">
               <li>
-                The room owner selects their initial role (Camper 🏕️ or Bear
-                🐻).
+                The room owner selects their initial role (Camper 🟥 or Bear
+                🟦).
               </li>
               <li>
                 The room owner sets the time limit, number of s'mores, total
@@ -58,7 +58,8 @@ export default function HowToPlayModal({ onClose }) {
                 catch them.
               </li>
               <li>
-                🐻 If Bear eats a s'more, the sugar will kill the bear and the camper wins!
+                🐻 If Bear eats a s'more, the sugar will kill the bear and the
+                camper wins!
               </li>
               <li>
                 The game ends when all s'mores are collected, the Camper is
