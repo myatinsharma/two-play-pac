@@ -236,7 +236,7 @@ export default function GameRoom({ params }) {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-sm font-bold">{roomId}</h2>
         <h1 className="text-xl font-bold text-center text-blue-600">
-          Camper & Bear
+          Camper and Bear
           <span className="text-[10px] font-normal text-gray-500 ml-2">
             (US only)
           </span>

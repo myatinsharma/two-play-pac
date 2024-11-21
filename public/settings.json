@@ -24,7 +24,8 @@
     ],
     "maze": [
       { "value": 1, "label": "Maze 1" },
-      { "value": 2, "label": "Maze 2" }
+      { "value": 2, "label": "Maze 2" },
+      { "value": 3, "label": "Maze for Web" }
     ]
   }
   
