@@ -23,9 +23,9 @@
       { "value": 2, "label": "Camper" }
     ],
     "maze": [
-      { "value": 1, "label": "Maze 1" },
-      { "value": 2, "label": "Maze 2" },
-      { "value": 3, "label": "Maze for Web" }
+      { "value": 1, "label": "Maze 1", "for": "mobile" },
+      { "value": 2, "label": "Maze 2", "for": "mobile" },
+      { "value": 3, "label": "Maze 3(Web)", "for": "web" }
     ]
   }
   

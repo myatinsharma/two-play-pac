@@ -16,6 +16,20 @@ let socket;
 const ROLE_NOTIFICATION_DURATION = 1500;
 const FIRST_VISIT_KEY = "hasVisitedBefore";
 
+// Optimized Socket.IO configuration
+const socketOptions = {
+  transports: ["websocket", "polling"], // Keep both for compatibility but prioritize websocket
+  upgrade: true,
+  rememberUpgrade: true,
+  timeout: 20000,
+  forceNew: false,
+  reconnection: true,
+  reconnectionAttempts: 3,
+  reconnectionDelay: 1000,
+  compression: true,
+  perMessageDeflate: true,
+};
+
 export default function GameRoom({ params }) {
   const { roomId } = params;
   const router = useRouter();
@@ -40,6 +54,15 @@ export default function GameRoom({ params }) {
   const [roleNotification, setRoleNotification] = useState(null);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
+  // Animation frame for smooth updates
+  let animationFrame;
+  const updateUISmooth = (updateFunction) => {
+    if (animationFrame) {
+      cancelAnimationFrame(animationFrame);
+    }
+    animationFrame = requestAnimationFrame(updateFunction);
+  };
+
   useEffect(() => {
     const savedRoomId = localStorage.getItem("roomOwner");
     if (savedRoomId && !roomId) {
@@ -49,7 +72,7 @@ export default function GameRoom({ params }) {
 
     if (!roomId) return;
 
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, socketOptions);
     socket.emit("joinRoom", { roomId, settings: settingsData });
 
     socket.on("roomData", (data) => {
@@ -124,6 +147,92 @@ export default function GameRoom({ params }) {
       setSmorePositions(mazeMap.smorePositions || []);
     });
 
+    // Handle optimized position updates (frequent, small messages)
+    socket.on("positionUpdate", (encodedData) => {
+      try {
+        const dataToDecode =
+          encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
+        const decodedData = msgpack.decode(new Uint8Array(dataToDecode));
+
+        if (decodedData && decodedData.type === "position") {
+          updateUISmooth(() => {
+            setPlayersPos((prevPos) => ({
+              ...prevPos,
+              [decodedData.role]: decodedData.position,
+            }));
+          });
+        }
+      } catch (error) {
+        console.error("Error decoding position update:", error);
+      }
+    });
+
+    // Handle s'more eating events (medium size messages)
+    socket.on("smoreEaten", (encodedData) => {
+      try {
+        const dataToDecode =
+          encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
+        const decodedData = msgpack.decode(new Uint8Array(dataToDecode));
+
+        if (decodedData) {
+          // Update only the changed fields
+          if (decodedData.playersPosition) {
+            setPlayersPos(decodedData.playersPosition);
+          }
+          if (decodedData.scores) {
+            setScores(decodedData.scores);
+          }
+          if (decodedData.gameStatus !== undefined) {
+            setGameStatus(decodedData.gameStatus);
+          }
+          if (decodedData.eatenSmore) {
+            setSmorePositions((prevPositions) =>
+              prevPositions.filter(
+                (smore) =>
+                  smore.row !== decodedData.eatenSmore.row ||
+                  smore.col !== decodedData.eatenSmore.col
+              )
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error decoding smore eaten update:", error);
+      }
+    });
+
+    // Handle game end events (full state messages)
+    socket.on("gameEnd", (encodedData) => {
+      try {
+        const dataToDecode =
+          encodedData instanceof Uint8Array ? encodedData.buffer : encodedData;
+        const decodedData = msgpack.decode(new Uint8Array(dataToDecode));
+
+        if (decodedData) {
+          setScores(decodedData.scores);
+          setPlayersPos(decodedData.playersPosition);
+          setGameStatus(decodedData.gameStatus);
+
+          if (decodedData.eatenSmore) {
+            setSmorePositions((prevPositions) =>
+              prevPositions.filter(
+                (smore) =>
+                  smore.row !== decodedData.eatenSmore.row ||
+                  smore.col !== decodedData.eatenSmore.col
+              )
+            );
+          }
+
+          if (decodedData.gameStatus === GAME_STATUS.GAME_OVER) {
+            setWinner(decodedData.winner);
+            setShowGameOverModal(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error decoding game end update:", error);
+      }
+    });
+
+    // Keep backward compatibility with original playerMove event
     socket.on("playerMove", (encodedData) => {
       if (encodedData === undefined) {
         console.error("Received undefined encodedData in playerMove event");
@@ -160,17 +269,49 @@ export default function GameRoom({ params }) {
       }
     });
 
-    socket.on("timeUpdate", ({ timeRemaining }) => {
-      setTimeRemaining(timeRemaining);
+    // Handle optimized time updates
+    socket.on("timeUpdate", (encodedData) => {
+      try {
+        if (
+          typeof encodedData === "object" &&
+          encodedData.timeRemaining !== undefined
+        ) {
+          // Handle plain object (backward compatibility)
+          setTimeRemaining(encodedData.timeRemaining);
+        } else {
+          // Handle MessagePack encoded data
+          const dataToDecode =
+            encodedData instanceof Uint8Array
+              ? encodedData.buffer
+              : encodedData;
+          const decodedData = msgpack.decode(new Uint8Array(dataToDecode));
+
+          if (decodedData && decodedData.type === "time") {
+            setTimeRemaining(decodedData.timeRemaining);
+          }
+        }
+      } catch (error) {
+        console.error("Error decoding time update:", error);
+        // Fallback to plain object handling
+        if (encodedData && encodedData.timeRemaining !== undefined) {
+          setTimeRemaining(encodedData.timeRemaining);
+        }
+      }
     });
 
     return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
       socket.off("roomData");
       socket.off("roleChosen");
       socket.off("startGame");
       socket.off("roomFull");
       socket.off("settingsUpdate");
       socket.off("playerMove");
+      socket.off("positionUpdate");
+      socket.off("smoreEaten");
+      socket.off("gameEnd");
       socket.off("timeUpdate");
       socket.disconnect();
     };
